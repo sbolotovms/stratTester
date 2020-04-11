@@ -7,6 +7,10 @@ data class Dollar(var quantity: BigDecimal) {
         return Dollar(quantity + other.quantity)
     }
 
+    infix operator fun minus(other: Dollar): Dollar {
+        return Dollar(quantity - other.quantity)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (other is Dollar) {
             return other.quantity == quantity

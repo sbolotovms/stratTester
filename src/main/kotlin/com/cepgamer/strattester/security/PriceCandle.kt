@@ -9,5 +9,6 @@ data class PriceCandle(
     val low: BigDecimal,
     val high: BigDecimal,
     val volume: BigDecimal,
+    val openTimestamp: BigInteger,
     val timespan: BigInteger
 )
