@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.cepgamer.strattester.security.DollarTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-04-11T00:04:04" hostname="sergei-HP-Z440" time="0.003">
+  <properties/>
+  <testcase name="Initial test" classname="com.cepgamer.strattester.security.DollarTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
