@@ -23,10 +23,11 @@ class YahooWebDownloader(symbol: String, period1: Int, period2: Int, interval: S
         const val apr1 = 1585724400
         const val may1 = 1588316400
 
+        const val dataFolder = "data/hourly/"
 
         fun writeYahooHourlyData(time1: Int, time2: Int, month: String) {
             val json = YahooWebDownloader("SPY", time1, time2, "1h", false).download()
-            val file = File("data/hourly/$month.json")
+            val file = File("$dataFolder$month.json")
             file.parentFile.mkdirs()
             file.createNewFile()
             file.writeText(json)

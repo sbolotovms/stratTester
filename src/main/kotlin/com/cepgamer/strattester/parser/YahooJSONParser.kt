@@ -1,15 +1,66 @@
 package com.cepgamer.strattester.parser
 
+import com.cepgamer.strattester.data.FileLoader
 import com.cepgamer.strattester.security.PriceCandle
 import kotlinx.serialization.json.Json
-import java.io.File
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.util.stream.IntStream
+import kotlin.streams.toList
 
 class YahooJSONParser(filename: String) : BaseParser() {
-    private val jsonFile = File(filename)
+    private val jsonFile = FileLoader(filename)
 
     override fun parse(): List<PriceCandle> {
-        Json.parseJson(jsonFile.readText())
+        val json = Json.parseJson(jsonFile.load())
 
-        return emptyList()
+        val result = json.jsonObject.getObject("chart").getObject("result")
+        val timestamps = result.getArray("timestamp").stream().mapToInt {
+            it.primitive.int
+        }
+
+        val candles = result.getObject("indicators").getArray("quote")[0].jsonObject
+
+        return parseJsonCandles(timestamps, candles)
+    }
+
+    private fun parseJsonCandles(timestamps: IntStream, candles: JsonObject): List<PriceCandle> {
+        val timestamp = timestamps.toList()
+        val bigDecimalConverter = { it: JsonElement ->
+            BigDecimal(it.primitive.content)
+        }
+        val lows = candles.getArray("low").stream().map(bigDecimalConverter).toList()
+        val volumes = candles.getArray("volume").stream().map(bigDecimalConverter).toList()
+        val opens = candles.getArray("open").stream().map(bigDecimalConverter).toList()
+        val highs = candles.getArray("high").stream().map(bigDecimalConverter).toList()
+        val closes = candles.getArray("close").stream().map(bigDecimalConverter).toList()
+
+        assert(
+            timestamp.size == lows.size
+                    && lows.size == volumes.size
+                    && volumes.size == opens.size
+                    && opens.size == highs.size
+                    && highs.size == closes.size
+        )
+
+        val candlesList = ArrayList<PriceCandle>(timestamp.size)
+        val range = timestamp[1] - timestamp[0]
+        for (i in timestamp.indices) {
+            candlesList.add(
+                PriceCandle(
+                    opens[i],
+                    closes[i],
+                    lows[i],
+                    highs[i],
+                    volumes[i],
+                    timestamp[i],
+                    range
+                )
+            )
+        }
+
+        return candlesList
     }
 }
