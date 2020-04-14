@@ -16,7 +16,7 @@ class YahooJSONParser(filename: String) : BaseParser() {
     override fun parse(): List<PriceCandle> {
         val json = Json.parseJson(jsonFile.load())
 
-        val result = json.jsonObject.getObject("chart").getObject("result")
+        val result = json.jsonObject.getObject("chart").getArray("result")[0].jsonObject
         val timestamps = result.getArray("timestamp").stream().mapToInt {
             it.primitive.int
         }
