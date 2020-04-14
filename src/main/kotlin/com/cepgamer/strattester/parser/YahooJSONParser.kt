@@ -10,11 +10,11 @@ import java.math.BigInteger
 import java.util.stream.IntStream
 import kotlin.streams.toList
 
-class YahooJSONParser(filename: String) : BaseParser() {
-    private val jsonFile = FileLoader(filename)
+class YahooJSONParser(private val json: String?, filename: String? = null) : BaseParser() {
+    private val jsonFile = filename?.let { FileLoader(filename) }
 
     override fun parse(): List<PriceCandle> {
-        val json = Json.parseJson(jsonFile.load())
+        val json = Json.parseJson(json ?: jsonFile?.load() ?: throw IllegalArgumentException())
 
         val result = json.jsonObject.getObject("chart").getArray("result")[0].jsonObject
         val timestamps = result.getArray("timestamp").stream().mapToInt {

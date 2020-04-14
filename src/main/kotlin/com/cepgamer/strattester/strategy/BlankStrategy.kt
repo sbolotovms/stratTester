@@ -5,7 +5,7 @@ import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
 
 class BlankStrategy(money: Dollar) : BaseStrategy(money) {
-    override fun priceUpdate(security: BaseSecurity, priceCandle: PriceCandle) {
+    override fun priceUpdate(securities: List<Pair<BaseSecurity, PriceCandle>>) {
         // Ignore
     }
 }

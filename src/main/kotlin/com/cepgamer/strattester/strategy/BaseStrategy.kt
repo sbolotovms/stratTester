@@ -9,5 +9,5 @@ import java.util.concurrent.ConcurrentHashMap
 abstract class BaseStrategy(val moneyAvailable: Dollar) {
     val securities = ConcurrentHashMap<BaseSecurity, List<Transaction>>()
 
-    abstract fun priceUpdate(security: BaseSecurity, priceCandle: PriceCandle)
+    abstract fun priceUpdate(securities: List<Pair<BaseSecurity, PriceCandle>>)
 }

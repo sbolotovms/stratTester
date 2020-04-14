@@ -4,7 +4,13 @@ import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
-class YahooWebDownloader(symbol: String, period1: Int, period2: Int, interval: String, preAndPostMarket: Boolean) :
+class YahooWebDownloader(
+    symbol: String,
+    period1: Int,
+    period2: Int,
+    interval: String,
+    preAndPostMarket: Boolean
+) :
     HttpDownloader(
         URL(
             "https://query1.finance.yahoo.com/v8/finance/chart/$symbol?symbol=$symbol" +
@@ -25,13 +31,26 @@ class YahooWebDownloader(symbol: String, period1: Int, period2: Int, interval: S
 
         const val dataFolder = "data/hourly/"
 
-        fun writeYahooHourlyData(time1: Int, time2: Int, month: String) {
-            val json = YahooWebDownloader("SPY", time1, time2, "1h", false).download()
-            val file = File("$dataFolder$month.json")
+        private fun getFileName(symbol: String, month: String) = "$dataFolder$symbol/$month.json"
+
+        private fun writeYahooHourlyData(symbol: String, time1: Int, time2: Int, month: String): String {
+            val json = YahooWebDownloader(symbol, time1, time2, "1h", false).download()
+            val file = File(getFileName(symbol, month))
             file.parentFile.mkdirs()
             file.createNewFile()
             file.writeText(json)
+
+            return json
         }
+
+        fun getYahooHourlyData(symbol: String, time1: Int, time2: Int, month: String): String =
+            File(getFileName(symbol, month)).let { file ->
+                return if (file.exists()) {
+                    file.readText()
+                } else {
+                    writeYahooHourlyData(symbol, time1, time2, month)
+                }
+            }
     }
-    // curl 'https://query1.finance.yahoo.com/v8/finance/chart/SPY?symbol=SPY&period1=1584385200&period2=1584716400&interval=15m&includePrePost=true&events=div%7Csplit%7Cearn&lang=en-US&region=US&crumb=NfrcPyWoAQX&corsDomain=finance.yahoo.com' --compressed
 }
+// curl 'https://query1.finance.yahoo.com/v8/finance/chart/SPY?symbol=SPY&period1=1584385200&period2=1584716400&interval=15m&includePrePost=true&events=div%7Csplit%7Cearn&lang=en-US&region=US&crumb=NfrcPyWoAQX&corsDomain=finance.yahoo.com' --compressed

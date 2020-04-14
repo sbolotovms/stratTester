@@ -3,6 +3,8 @@ package com.cepgamer.strattester.security
 import java.math.BigDecimal
 
 data class Dollar(var quantity: BigDecimal) {
+    constructor(quantity: Int) : this(BigDecimal(quantity))
+
     infix operator fun plus(other: Dollar): Dollar {
         return Dollar(quantity + other.quantity)
     }
