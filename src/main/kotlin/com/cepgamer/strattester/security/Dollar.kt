@@ -5,6 +5,10 @@ import java.math.BigDecimal
 data class Dollar(var quantity: BigDecimal) {
     constructor(quantity: Int) : this(BigDecimal(quantity))
 
+    override fun toString(): String {
+        return "Dollar: $quantity"
+    }
+
     infix operator fun plus(other: Dollar): Dollar {
         return Dollar(quantity + other.quantity)
     }

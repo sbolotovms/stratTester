@@ -31,10 +31,11 @@ object Main {
             security as BaseSecurity to it
         }
 
-        val runner = SavedDataStrategyRunner(listOf(strat, someStrat), listOf(data))
+        val strats = listOf(strat, someStrat)
+        val runner = SavedDataStrategyRunner(strats, listOf(data))
 
         runner.run()
 
-        println(strat.moneyAvailable)
+        println(strats)
     }
 }

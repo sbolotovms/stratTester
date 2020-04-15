@@ -21,8 +21,12 @@ class MetricCutoffStrategy(
         metric.newData(priceCandle)
 
         if (metric.goodSignal >= goodSignalCutoff) {
-            val transaction = Transaction.purchase(security, priceCandle, moneyAvailable)
-            updateData(transaction)
+            try {
+                val transaction = Transaction.purchase(security, priceCandle, moneyAvailable)
+                updateData(transaction)
+            } catch (e: Transaction.TransactionFailedException) {
+                println("Purchase failed: ${e.message}")
+            }
         } else if (metric.badSignal >= badSignalCutoff) {
             openPosition?.let { open ->
                 if (open.quantity >= BigDecimal.ZERO) {

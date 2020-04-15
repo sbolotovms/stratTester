@@ -18,10 +18,30 @@ abstract class BaseStrategy(
     fun updateData(pair: Pair<Transaction, Position>) {
         transactions.add(pair.first)
         positions.add(pair.second)
+
+        openPosition = if (pair.second.status == Position.Status.OPEN) {
+            pair.second
+        } else {
+            null
+        }
     }
 
     abstract fun priceUpdate(
         security: BaseSecurity,
         priceCandle: PriceCandle
     )
+
+    fun closePosition(priceCandle: PriceCandle) {
+        openPosition?.let { open ->
+            val transaction = Transaction.sell(open, priceCandle, moneyAvailable)
+            updateData(transaction)
+        }
+    }
+
+    override fun toString(): String {
+        return """
+            Money available: $moneyAvailable
+            Current position: $openPosition
+            All positions: $positions"""
+    }
 }

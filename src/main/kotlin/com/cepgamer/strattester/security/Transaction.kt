@@ -1,6 +1,7 @@
 package com.cepgamer.strattester.security
 
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
 data class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val action: Action) {
@@ -12,8 +13,13 @@ data class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val
     class TransactionFailedException(reason: String) : Exception("Transaction failed, reason: $reason")
 
     companion object {
+        @Throws(TransactionFailedException::class)
         fun purchase(security: BaseSecurity, priceCandle: PriceCandle, money: Dollar): Pair<Transaction, Position> {
-            val quantity = money.quantity.rem(priceCandle.high)
+            if (priceCandle.high >= money.quantity) {
+                throw TransactionFailedException("Not enough money")
+            }
+
+            val quantity = money.quantity.divide(priceCandle.high, RoundingMode.FLOOR)
             money.quantity -= priceCandle.high * quantity
 
             return Transaction(security, quantity, Action.BUY) to Position(
