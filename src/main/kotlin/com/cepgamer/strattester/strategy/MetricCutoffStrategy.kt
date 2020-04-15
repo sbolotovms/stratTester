@@ -31,6 +31,7 @@ class MetricCutoffStrategy(
             openPosition?.let { open ->
                 if (open.quantity >= BigDecimal.ZERO) {
                     val transaction = Transaction.sell(open, priceCandle, moneyAvailable)
+                    updateData(transaction)
                 }
             }
         }
