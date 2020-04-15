@@ -8,12 +8,14 @@ import kotlinx.coroutines.runBlocking
 
 abstract class StrategyRunner(val strategies: List<BaseStrategy>) {
     fun updateStrategies(securities: List<Pair<BaseSecurity, PriceCandle>>) = runBlocking {
-            strategies.map {
-                launch {
-                    it.priceUpdate(ArrayList(securities))
+        strategies.map {
+            launch {
+                for (pair in securities) {
+                    it.priceUpdate(pair.first, pair.second)
                 }
             }
         }
+    }
 
     abstract fun run()
 }

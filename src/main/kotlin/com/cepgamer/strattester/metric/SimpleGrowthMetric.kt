@@ -1,16 +1,10 @@
 package com.cepgamer.strattester.metric
 
-import com.cepgamer.strattester.security.PriceCandle
 import java.math.BigDecimal
 
-class SimpleGrowthMetric(candles: List<PriceCandle>) : BaseMetric(candles) {
-    init {
-        if (candles.isEmpty()) {
-            throw IllegalArgumentException("Price list is empty")
-        }
-    }
-
-    private val lastCandle = data[data.lastIndex]
+class SimpleGrowthMetric : BaseMetric() {
+    private val lastCandle
+        get() = data[data.lastIndex]
 
     override val goodSignalInternal: BigDecimal
         get() = (lastCandle.close - lastCandle.open) / (lastCandle.high - lastCandle.low)

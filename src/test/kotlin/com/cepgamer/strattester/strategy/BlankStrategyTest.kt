@@ -8,16 +8,13 @@ import org.junit.Test
 
 class BlankStrategyTest {
     val money = Dollar(1_000)
-    val security1 = Stock("ALK")
-    val security2 = Stock("ALK")
-    val blankStrategy = BlankStrategy(money)
+    val security = Stock("ALK")
+    val blankStrategy = BlankStrategy(security, money)
 
     @Test
     fun `Test money didn't change`()
     {
-        blankStrategy.priceUpdate(listOf(
-            security1 to growthCandle,
-            security2 to shrinkCandle
-        ))
+        blankStrategy.priceUpdate(security, growthCandle)
+        blankStrategy.priceUpdate(security, shrinkCandle)
     }
 }

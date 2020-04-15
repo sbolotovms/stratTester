@@ -1,13 +1,27 @@
 package com.cepgamer.strattester.strategy
 
-import com.cepgamer.strattester.security.BaseSecurity
-import com.cepgamer.strattester.security.Dollar
-import com.cepgamer.strattester.security.PriceCandle
-import com.cepgamer.strattester.security.Transaction
-import java.util.concurrent.ConcurrentHashMap
+import com.cepgamer.strattester.security.*
 
-abstract class BaseStrategy(val moneyAvailable: Dollar) {
-    val securities = ConcurrentHashMap<BaseSecurity, List<Transaction>>()
+abstract class BaseStrategy(
+    val security: BaseSecurity,
+    val moneyAvailable: Dollar
+) {
+    val transactions: MutableList<Transaction> = mutableListOf()
+    val positions: MutableList<Position> = mutableListOf()
 
-    abstract fun priceUpdate(securities: List<Pair<BaseSecurity, PriceCandle>>)
+    var openPosition: Position? = null
+
+    fun updateData(transaction: Transaction, position: Position) {
+        updateData(transaction to position)
+    }
+
+    fun updateData(pair: Pair<Transaction, Position>) {
+        transactions.add(pair.first)
+        positions.add(pair.second)
+    }
+
+    abstract fun priceUpdate(
+        security: BaseSecurity,
+        priceCandle: PriceCandle
+    )
 }

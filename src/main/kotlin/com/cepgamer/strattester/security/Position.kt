@@ -7,6 +7,13 @@ data class Position(
     val security: BaseSecurity,
     val quantity: BigDecimal,
     val purchasePrice: BigDecimal,
-    val purchaseDate: Date
+    val purchaseDate: Date,
+    var status: Status
 ) {
+    var sellPrice: BigDecimal = BigDecimal(-1)
+
+    enum class Status {
+        OPEN,
+        CLOSED
+    }
 }

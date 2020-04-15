@@ -11,7 +11,7 @@ class SimpleGrowthMetricTests {
 
     @Test
     fun `Test growth result value`() {
-        simpleGrowthMetric = SimpleGrowthMetric(listOf(growthCandle))
+        simpleGrowthMetric = SimpleGrowthMetric().apply { newData(growthCandle) }
 
         Assert.assertEquals(BigDecimal(1), simpleGrowthMetric.goodSignal)
         Assert.assertEquals(BigDecimal(-1), simpleGrowthMetric.badSignal)
@@ -19,7 +19,7 @@ class SimpleGrowthMetricTests {
 
     @Test
     fun `Test shrink result value`() {
-        simpleGrowthMetric = SimpleGrowthMetric(listOf(shrinkCandle))
+        simpleGrowthMetric = SimpleGrowthMetric().apply { newData(shrinkCandle) }
 
         Assert.assertEquals(BigDecimal(-1), simpleGrowthMetric.goodSignal)
         Assert.assertEquals(BigDecimal(1), simpleGrowthMetric.badSignal)
@@ -28,7 +28,7 @@ class SimpleGrowthMetricTests {
     @Test
     fun `Test half growth`() {
         val halfCandle = growthCandle.copy(close = BigDecimal(1.5))
-        simpleGrowthMetric = SimpleGrowthMetric(listOf(halfCandle))
+        simpleGrowthMetric = SimpleGrowthMetric().apply { newData(halfCandle) }
 
         Assert.assertEquals(BigDecimal(0.5), simpleGrowthMetric.goodSignal)
         Assert.assertEquals(BigDecimal(-0.5), simpleGrowthMetric.badSignal)

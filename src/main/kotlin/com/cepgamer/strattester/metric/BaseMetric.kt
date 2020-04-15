@@ -4,7 +4,13 @@ import com.cepgamer.strattester.security.PriceCandle
 import java.lang.IllegalStateException
 import java.math.BigDecimal
 
-abstract class BaseMetric(val data: List<PriceCandle>) {
+abstract class BaseMetric {
+    val data: MutableList<PriceCandle> = mutableListOf()
+
+    fun newData(priceCandle: PriceCandle) {
+        data.add(priceCandle)
+    }
+
     protected abstract val goodSignalInternal: BigDecimal
 
     val goodSignal: BigDecimal
