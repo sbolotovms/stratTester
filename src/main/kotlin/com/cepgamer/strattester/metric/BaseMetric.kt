@@ -7,7 +7,7 @@ import java.math.BigDecimal
 abstract class BaseMetric {
     val data: MutableList<PriceCandle> = mutableListOf()
 
-    fun newData(priceCandle: PriceCandle) {
+    open fun newData(priceCandle: PriceCandle) {
         data.add(priceCandle)
     }
 
