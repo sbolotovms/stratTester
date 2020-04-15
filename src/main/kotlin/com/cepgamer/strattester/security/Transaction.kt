@@ -2,11 +2,12 @@ package com.cepgamer.strattester.security
 
 import java.math.BigDecimal
 
-class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val action: Action) {
+data class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val action: Action) {
     enum class Action {
         BUY,
         SELL
     }
+
     class TransactionFailedException(reason: String) : Exception("Transaction failed, reason: $reason")
 
     companion object {
@@ -17,8 +18,8 @@ class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val acti
             return Transaction(security, quantity, Action.BUY)
         }
 
-        fun sell(security: BaseSecurity, priceCandle: PriceCandle, money: Dollar): Position {
-
+        fun sell(position: Position, priceCandle: PriceCandle, money: Dollar): Transaction {
+            return Transaction(position.security, position.quantity, Action.SELL)
         }
     }
 }

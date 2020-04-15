@@ -10,7 +10,7 @@ abstract class BaseSecurity(val symbol: String) {
             throw IllegalArgumentException("Insufficient funds")
         }
 
-        val ret = Transaction(this, quantity)
+        val ret = Transaction(this, quantity, Transaction.Action.BUY)
         money.quantity -= priceCandle.high * quantity
 
         return ret
