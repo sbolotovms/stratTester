@@ -42,6 +42,7 @@ abstract class BaseStrategy(
         return """
             Money available: $moneyAvailable
             Current position: $openPosition
-            All positions: $positions"""
+            All positions: $positions
+            All transactions: $transactions"""
     }
 }
