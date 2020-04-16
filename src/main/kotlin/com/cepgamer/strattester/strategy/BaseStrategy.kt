@@ -6,6 +6,12 @@ abstract class BaseStrategy(
     val security: BaseSecurity,
     val moneyAvailable: Dollar
 ) {
+    enum class Action {
+        BUY,
+        SELL,
+        HOLD
+    }
+
     val transactions: MutableList<Transaction> = mutableListOf()
     val positions: MutableList<Position> = mutableListOf()
 
@@ -28,13 +34,28 @@ abstract class BaseStrategy(
 
     abstract fun priceUpdate(
         priceCandle: PriceCandle
-    )
+    ): Action
 
-    fun closePosition(priceCandle: PriceCandle) {
-        openPositions.forEach { open ->
-            val transaction = Transaction.sell(open, priceCandle, moneyAvailable)
+    fun purchaseStock(priceCandle: PriceCandle): Action {
+        try {
+            val transaction = Transaction.purchase(security, priceCandle, moneyAvailable)
             updateData(transaction)
+            return Action.BUY
+        } catch (e: Transaction.TransactionFailedException) {
+            println("Purchase failed: ${e.message}")
         }
+        return Action.HOLD
+    }
+
+    fun closePositions(priceCandle: PriceCandle): Action {
+        if (openPositions.size >= 0) {
+            ArrayList(openPositions).forEach { open ->
+                val transaction = Transaction.sell(open, priceCandle, moneyAvailable)
+                updateData(transaction)
+            }
+            return Action.SELL
+        }
+        return Action.HOLD
     }
 
     override fun toString(): String {

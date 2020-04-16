@@ -23,27 +23,6 @@ object Main {
 
     fun moneyAvailable(): Dollar = Dollar(BigDecimal(10000))
 
-    val strats: List<BaseStrategy>
-        get() {
-            val metricCutoffs =
-                MetricCutoffStrategy.generateNStrategies(SimpleGrowthMetric(), security, moneyAvailable(), 10) +
-                        MetricCutoffStrategy.generateNStrategies(
-                            VolumeAmplifiedGrowth(10),
-                            security,
-                            moneyAvailable(),
-                            10
-                        )
-            val custom = listOf(
-                BlankStrategy(security, moneyAvailable()),
-                MetricCutoffStrategy(SimpleGrowthMetric(), security, moneyAvailable(), BigDecimal(0)),
-                MetricCutoffStrategy(SwapSignalMetric(SimpleGrowthMetric()), security, moneyAvailable(), BigDecimal(0)),
-                MetricCutoffStrategy(InverseMetric(SimpleGrowthMetric()), security, moneyAvailable(), BigDecimal(0)),
-                BuyStrategy(security, moneyAvailable())
-            )
-            val final = metricCutoffs + custom
-            return final
-        }
-
     @JvmStatic
     fun main(args: Array<String>) {
         val json = YahooWebDownloader.getYahooHourlyData(
@@ -56,25 +35,27 @@ object Main {
         val data = rawData.map {
             security as BaseSecurity to it
         }
-        val dailyData = PriceCandle.toDaily(data.map { it.second })
+        val dailyData = PriceCandle.toDaily(data.map { it.second }).map {
+            security to it
+        }
 
-        val strats = strats
-        val oneMetric = listOf(MetricCutoffStrategy(
-            VolumeAmplifiedGrowth(10),
-            security,
-            moneyAvailable(),
-            BigDecimal(1),
-            BigDecimal(1)
-        ))
+        val strats = StrategyListGenerator(security).generate()
 
         val runner = SavedDataStrategyRunner(
-            oneMetric, listOf(data)
+            strats, listOf(dailyData)
         )
 
         runner.run()
 
         val weak = strats.filter { it.moneyAvailable.quantity <= BigDecimal(5_000) }
 
-        println(oneMetric)
+        println(strats)
+        println("""
+
+----------------------------------------------------------------
+            Any successful strats: ${strats.find { it.moneyAvailable.quantity > moneyAvailable().quantity } != null}
+            Successful strats: ${strats.filter { it.moneyAvailable.quantity > moneyAvailable().quantity }}
+----------------------------------------------------------------
+        """)
     }
 }

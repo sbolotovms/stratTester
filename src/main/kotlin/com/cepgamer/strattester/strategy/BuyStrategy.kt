@@ -6,11 +6,13 @@ import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.security.Transaction
 
 class BuyStrategy(security: BaseSecurity, money: Dollar): BaseStrategy(security, money) {
-    override fun priceUpdate(priceCandle: PriceCandle) {
+    override fun priceUpdate(priceCandle: PriceCandle): Action {
         try {
             updateData(Transaction.purchase(security, priceCandle, moneyAvailable))
+            return Action.BUY
         } catch (e: Transaction.TransactionFailedException) {
             // ignore
         }
+        return Action.HOLD
     }
 }

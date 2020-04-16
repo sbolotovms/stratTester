@@ -13,7 +13,7 @@ abstract class StrategyRunner(val strategies: List<BaseStrategy>) {
                 for (pair in securities.take(securities.size - 1)) {
                     it.priceUpdate(pair.second)
                 }
-                it.closePosition(securities.last().second)
+                it.closePositions(securities.last().second)
             }
         }
     }
@@ -21,7 +21,7 @@ abstract class StrategyRunner(val strategies: List<BaseStrategy>) {
     fun closeStrategies(priceCandle: PriceCandle) = runBlocking {
         strategies.map {
             launch {
-                it.closePosition(priceCandle)
+                it.closePositions(priceCandle)
             }
         }
     }

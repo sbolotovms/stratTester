@@ -16,24 +16,15 @@ class MetricCutoffStrategy(
 ) : MetricStrategy(metric, security, moneyAvailable) {
     override fun priceUpdate(
         priceCandle: PriceCandle
-    ) {
+    ): Action {
         metric.newData(priceCandle)
 
         if (metric.goodSignal >= goodSignalCutoff) {
-            try {
-                val transaction = Transaction.purchase(security, priceCandle, moneyAvailable)
-                updateData(transaction)
-            } catch (e: Transaction.TransactionFailedException) {
-                println("Purchase failed: ${e.message}")
-            }
+            return purchaseStock(priceCandle)
         } else if (metric.badSignal >= badSignalCutoff) {
-            openPositions.forEach { open ->
-                if (open.quantity >= BigDecimal.ZERO) {
-                    val transaction = Transaction.sell(open, priceCandle, moneyAvailable)
-                    updateData(transaction)
-                }
-            }
+            return closePositions(priceCandle)
         }
+        return Action.HOLD
     }
 
     companion object {

@@ -42,7 +42,7 @@ data class PriceCandle(
     companion object {
         fun toDaily(candles: List<PriceCandle>): List<PriceCandle> {
             val listOfLists = candles.stream().collect(Collectors.groupingBy { candle: PriceCandle ->
-                candle.openTimestamp / (24 * 60 * 60)
+                (candle.openTimestamp - 21600) / (24 * 60 * 60)
             }).toList()
             val list = listOfLists.map {
                 it.second.reduce { acc, priceCandle ->
@@ -56,7 +56,7 @@ data class PriceCandle(
                         acc.timespan + priceCandle.timespan
                     )
                 }
-            }
+            }.sortedBy { it.openTimestamp }
 
             return list
         }

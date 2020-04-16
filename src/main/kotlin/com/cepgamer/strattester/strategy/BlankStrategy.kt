@@ -10,7 +10,8 @@ class BlankStrategy(
 ) : BaseStrategy(security, money) {
     override fun priceUpdate(
         priceCandle: PriceCandle
-    ) {
+    ): Action {
         // Ignore
+        return Action.HOLD
     }
 }
