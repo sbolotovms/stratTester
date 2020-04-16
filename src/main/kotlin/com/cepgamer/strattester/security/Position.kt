@@ -8,9 +8,9 @@ data class Position(
     val quantity: BigDecimal,
     val purchasePrice: BigDecimal,
     val purchaseDate: Date,
-    var status: Status
-) {
+    var status: Status,
     var sellPrice: BigDecimal = BigDecimal(-1)
+) {
 
     enum class Status {
         OPEN,

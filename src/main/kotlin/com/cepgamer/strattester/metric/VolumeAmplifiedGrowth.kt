@@ -22,7 +22,7 @@ class VolumeAmplifiedGrowth(private val trailingPrices: Int) : BaseMetric() {
 
         return if (isGood) {
             if (priceMovement >= BigDecimal.ZERO) {
-                untrimmedSignal.min(BigDecimal.ONE)
+                untrimmedSignal.min(BigDecimal.ONE).max(BigDecimal(-1))
             } else {
                 BigDecimal.ZERO
             }
@@ -30,7 +30,7 @@ class VolumeAmplifiedGrowth(private val trailingPrices: Int) : BaseMetric() {
             if (priceMovement >= BigDecimal.ZERO) {
                 BigDecimal.ZERO
             } else {
-                untrimmedSignal.min(BigDecimal.ONE)
+                untrimmedSignal.min(BigDecimal.ONE).max(BigDecimal(-1))
             }
         }
     }
