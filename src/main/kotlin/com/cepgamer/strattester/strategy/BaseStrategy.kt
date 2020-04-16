@@ -9,7 +9,7 @@ abstract class BaseStrategy(
     val transactions: MutableList<Transaction> = mutableListOf()
     val positions: MutableList<Position> = mutableListOf()
 
-    var openPosition: Position? = null
+    val openPositions: MutableList<Position> = mutableListOf()
 
     fun updateData(transaction: Transaction, position: Position) {
         updateData(transaction to position)
@@ -19,10 +19,10 @@ abstract class BaseStrategy(
         transactions.add(pair.first)
         positions.add(pair.second)
 
-        openPosition = if (pair.second.status == Position.Status.OPEN) {
-            pair.second
+        if (pair.second.status == Position.Status.OPEN) {
+            openPositions.add(pair.second)
         } else {
-            null
+            openPositions.remove(pair.second)
         }
     }
 
@@ -31,7 +31,7 @@ abstract class BaseStrategy(
     )
 
     fun closePosition(priceCandle: PriceCandle) {
-        openPosition?.let { open ->
+        openPositions.forEach { open ->
             val transaction = Transaction.sell(open, priceCandle, moneyAvailable)
             updateData(transaction)
         }
@@ -39,8 +39,9 @@ abstract class BaseStrategy(
 
     override fun toString(): String {
         return """
+            Type: ${this::class.simpleName}
             Money available: $moneyAvailable
-            Current position: $openPosition
+            Current position: $openPositions
             All positions: $positions
             All transactions: $transactions"""
     }

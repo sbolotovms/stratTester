@@ -9,6 +9,7 @@ import com.cepgamer.strattester.parser.YahooJSONParser
 import com.cepgamer.strattester.runner.SavedDataStrategyRunner
 import com.cepgamer.strattester.security.BaseSecurity
 import com.cepgamer.strattester.security.Dollar
+import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.strategy.BaseStrategy
 import com.cepgamer.strattester.strategy.BlankStrategy
@@ -55,12 +56,25 @@ object Main {
         val data = rawData.map {
             security as BaseSecurity to it
         }
+        val dailyData = PriceCandle.toDaily(data.map { it.second })
 
         val strats = strats
-        val runner = SavedDataStrategyRunner(strats, listOf(data))
+        val oneMetric = listOf(MetricCutoffStrategy(
+            VolumeAmplifiedGrowth(10),
+            security,
+            moneyAvailable(),
+            BigDecimal(1),
+            BigDecimal(1)
+        ))
+
+        val runner = SavedDataStrategyRunner(
+            oneMetric, listOf(data)
+        )
 
         runner.run()
 
-        println(strats)
+        val weak = strats.filter { it.moneyAvailable.quantity <= BigDecimal(5_000) }
+
+        println(oneMetric)
     }
 }

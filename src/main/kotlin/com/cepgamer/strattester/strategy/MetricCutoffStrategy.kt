@@ -27,7 +27,7 @@ class MetricCutoffStrategy(
                 println("Purchase failed: ${e.message}")
             }
         } else if (metric.badSignal >= badSignalCutoff) {
-            openPosition?.let { open ->
+            openPositions.forEach { open ->
                 if (open.quantity >= BigDecimal.ZERO) {
                     val transaction = Transaction.sell(open, priceCandle, moneyAvailable)
                     updateData(transaction)

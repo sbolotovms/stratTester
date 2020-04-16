@@ -11,7 +11,6 @@ data class Position(
     var status: Status,
     var sellPrice: BigDecimal = BigDecimal(-1)
 ) {
-
     enum class Status {
         OPEN,
         CLOSED

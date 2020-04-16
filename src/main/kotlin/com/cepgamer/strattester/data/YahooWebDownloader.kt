@@ -24,10 +24,10 @@ class YahooWebDownloader(
     }
 
     companion object {
-        const val feb1 = 1580544000
-        const val mar1 = 1583049600
-        const val apr1 = 1585724400
-        const val may1 = 1588316400
+        const val feb1 = 1580562000
+        const val mar1 = 1583067600
+        const val apr1 = 1585742400
+        const val may1 = 1588334400
 
         const val dataFolder = "data/hourly/"
 

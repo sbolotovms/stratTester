@@ -1,8 +1,8 @@
 package com.cepgamer.strattester.security
 
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.math.RoundingMode
+import java.util.stream.Collectors
 
 data class PriceCandle(
     var open: BigDecimal,
@@ -37,5 +37,28 @@ data class PriceCandle(
         low = low.setScale(5, RoundingMode.HALF_UP)
         high = high.setScale(5, RoundingMode.HALF_UP)
         volume = volume.setScale(5, RoundingMode.HALF_UP)
+    }
+
+    companion object {
+        fun toDaily(candles: List<PriceCandle>): List<PriceCandle> {
+            val listOfLists = candles.stream().collect(Collectors.groupingBy { candle: PriceCandle ->
+                candle.openTimestamp / (24 * 60 * 60)
+            }).toList()
+            val list = listOfLists.map {
+                it.second.reduce { acc, priceCandle ->
+                    PriceCandle(
+                        acc.open,
+                        priceCandle.open,
+                        acc.low.min(priceCandle.low),
+                        acc.high.max(priceCandle.high),
+                        acc.volume + priceCandle.volume,
+                        acc.openTimestamp,
+                        acc.timespan + priceCandle.timespan
+                    )
+                }
+            }
+
+            return list
+        }
     }
 }

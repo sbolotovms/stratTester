@@ -18,13 +18,13 @@ class TransactionTests {
         val money = money
         val (transaction, position) = Transaction.purchase(security, TestConstants.growthCandle, money)
 
-        Assert.assertEquals(BigDecimal.ZERO, money.quantity)
+        Assert.assertEquals(BigDecimal.ZERO.setScale(5), money.quantity)
         Assert.assertEquals(Transaction(security, BigDecimal(5_000), Transaction.Action.BUY), transaction)
         Assert.assertEquals(
             Position(
                 security,
                 BigDecimal(5_000),
-                BigDecimal(2),
+                BigDecimal(2).setScale(5),
                 position.purchaseDate,
                 Position.Status.OPEN
             ), position
@@ -34,20 +34,20 @@ class TransactionTests {
     @Test
     fun `Test transaction sell`() {
         val money = money
-        val position = Position(security, BigDecimal(10_000), BigDecimal(1), Date(), Position.Status.OPEN)
+        val position = Position(security, BigDecimal(10_000), BigDecimal(1).setScale(5), Date(), Position.Status.OPEN)
         val (transaction, resultingPosition) = Transaction.sell(position, TestConstants.growthCandle, money)
 
-        Assert.assertEquals(BigDecimal(20_000), money.quantity)
+        Assert.assertEquals(BigDecimal(20_000).setScale(5), money.quantity)
         Assert.assertSame(position, resultingPosition)
         Assert.assertEquals(Transaction(security, BigDecimal(10_000), Transaction.Action.SELL), transaction)
         Assert.assertEquals(
             Position(
                 security,
                 BigDecimal(10_000),
-                BigDecimal.ONE,
+                BigDecimal.ONE.setScale(5),
                 resultingPosition.purchaseDate,
                 Position.Status.CLOSED
-            ), resultingPosition
+            ).apply { sellPrice = BigDecimal(1).setScale(5) }, resultingPosition
         )
     }
 }

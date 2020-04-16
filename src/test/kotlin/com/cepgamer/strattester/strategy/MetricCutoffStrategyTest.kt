@@ -32,8 +32,8 @@ class MetricCutoffStrategyTest {
                 Position(
                     security,
                     BigDecimal(5_000),
-                    BigDecimal(2),
-                    strategy.openPosition!!.purchaseDate,
+                    BigDecimal(2).setScale(5),
+                    strategy.openPositions[0].purchaseDate,
                     Position.Status.OPEN
                 )
             ), strategy.positions
