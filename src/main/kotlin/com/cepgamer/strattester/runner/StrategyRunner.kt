@@ -11,7 +11,7 @@ abstract class StrategyRunner(val strategies: List<BaseStrategy>) {
         strategies.map {
             launch {
                 for (pair in securities.take(securities.size - 1)) {
-                    it.priceUpdate(pair.first, pair.second)
+                    it.priceUpdate(pair.second)
                 }
                 it.closePosition(securities.last().second)
             }

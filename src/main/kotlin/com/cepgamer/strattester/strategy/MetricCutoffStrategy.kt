@@ -15,7 +15,6 @@ class MetricCutoffStrategy(
     val badSignalCutoff: BigDecimal = BigDecimal.ZERO
 ) : MetricStrategy(metric, security, moneyAvailable) {
     override fun priceUpdate(
-        security: BaseSecurity,
         priceCandle: PriceCandle
     ) {
         metric.newData(priceCandle)
@@ -33,6 +32,28 @@ class MetricCutoffStrategy(
                     val transaction = Transaction.sell(open, priceCandle, moneyAvailable)
                     updateData(transaction)
                 }
+            }
+        }
+    }
+
+    companion object {
+        /**
+         * Generates N + 1 strategies from 0 to 1 with 1/N step.
+         */
+        fun generateNStrategies(
+            metric: BaseMetric,
+            security: BaseSecurity,
+            moneyAvailable: Dollar,
+            n: Int
+        ): List<BaseStrategy> {
+            return (0..n).map { i ->
+                MetricCutoffStrategy(
+                    metric,
+                    security,
+                    moneyAvailable.copy(),
+                    BigDecimal(i) / BigDecimal(n),
+                    BigDecimal(i) / BigDecimal(n)
+                )
             }
         }
     }

@@ -27,7 +27,6 @@ abstract class BaseStrategy(
     }
 
     abstract fun priceUpdate(
-        security: BaseSecurity,
         priceCandle: PriceCandle
     )
 

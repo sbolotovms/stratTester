@@ -1,7 +1,6 @@
 package com.cepgamer.strattester.strategy
 
 import com.cepgamer.strattester.TestConstants
-import com.cepgamer.strattester.metric.BaseMetric
 import com.cepgamer.strattester.metric.ConstantMetric
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.Position
@@ -23,7 +22,7 @@ class MetricCutoffStrategyTest {
         val money = money
         val strategy = MetricCutoffStrategy(metric, security, money)
 
-        strategy.priceUpdate(security, TestConstants.growthCandle)
+        strategy.priceUpdate(TestConstants.growthCandle)
         Assert.assertEquals(
             listOf(Transaction(security, BigDecimal(5_000), Transaction.Action.BUY)),
             strategy.transactions
@@ -47,7 +46,7 @@ class MetricCutoffStrategyTest {
         val money = money
         val strategy = MetricCutoffStrategy(metric, security, money)
 
-        strategy.priceUpdate(security, TestConstants.growthCandle)
+        strategy.priceUpdate(TestConstants.growthCandle)
         Assert.assertEquals(
             emptyList<Transaction>(),
             strategy.transactions

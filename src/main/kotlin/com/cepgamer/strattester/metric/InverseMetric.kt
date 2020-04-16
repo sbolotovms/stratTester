@@ -4,7 +4,7 @@ import java.math.BigDecimal
 
 class InverseMetric(otherMetric: BaseMetric): DelegateMetric(otherMetric) {
     override val goodSignalInternal: BigDecimal
-        get() = BigDecimal.ONE - otherMetric.goodSignal
+        get() = BigDecimal(-1) * otherMetric.goodSignal
     override val badSignalInternal: BigDecimal
-        get() = BigDecimal.ONE - otherMetric.badSignal
+        get() = BigDecimal(-1) * otherMetric.badSignal
 }

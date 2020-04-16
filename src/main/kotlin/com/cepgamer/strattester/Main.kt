@@ -11,6 +11,7 @@ import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.strategy.BaseStrategy
 import com.cepgamer.strattester.strategy.BlankStrategy
+import com.cepgamer.strattester.strategy.BuyStrategy
 import com.cepgamer.strattester.strategy.MetricCutoffStrategy
 import java.math.BigDecimal
 
@@ -22,12 +23,17 @@ object Main {
 
     val strats: List<BaseStrategy>
         get() {
-            return listOf(
+            val metricCutoffs =
+                MetricCutoffStrategy.generateNStrategies(SimpleGrowthMetric(), security, moneyAvailable(), 10)
+            val custom = listOf(
                 BlankStrategy(security, moneyAvailable()),
                 MetricCutoffStrategy(SimpleGrowthMetric(), security, moneyAvailable(), BigDecimal(0)),
                 MetricCutoffStrategy(SwapSignalMetric(SimpleGrowthMetric()), security, moneyAvailable(), BigDecimal(0)),
-                MetricCutoffStrategy(InverseMetric(SimpleGrowthMetric()), security, moneyAvailable(), BigDecimal(0))
+                MetricCutoffStrategy(InverseMetric(SimpleGrowthMetric()), security, moneyAvailable(), BigDecimal(0)),
+                BuyStrategy(security, moneyAvailable())
             )
+            val final = metricCutoffs + custom
+            return final
         }
 
     @JvmStatic

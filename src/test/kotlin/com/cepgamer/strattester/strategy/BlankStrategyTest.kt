@@ -14,7 +14,7 @@ class BlankStrategyTest {
     @Test
     fun `Test money didn't change`()
     {
-        blankStrategy.priceUpdate(security, growthCandle)
-        blankStrategy.priceUpdate(security, shrinkCandle)
+        blankStrategy.priceUpdate(growthCandle)
+        blankStrategy.priceUpdate(shrinkCandle)
     }
 }

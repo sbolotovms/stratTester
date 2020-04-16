@@ -9,7 +9,6 @@ class BlankStrategy(
     money: Dollar
 ) : BaseStrategy(security, money) {
     override fun priceUpdate(
-        security: BaseSecurity,
         priceCandle: PriceCandle
     ) {
         // Ignore
