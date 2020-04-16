@@ -4,6 +4,7 @@ import com.cepgamer.strattester.data.YahooWebDownloader
 import com.cepgamer.strattester.metric.InverseMetric
 import com.cepgamer.strattester.metric.SimpleGrowthMetric
 import com.cepgamer.strattester.metric.SwapSignalMetric
+import com.cepgamer.strattester.metric.VolumeAmplifiedGrowth
 import com.cepgamer.strattester.parser.YahooJSONParser
 import com.cepgamer.strattester.runner.SavedDataStrategyRunner
 import com.cepgamer.strattester.security.BaseSecurity
@@ -24,7 +25,13 @@ object Main {
     val strats: List<BaseStrategy>
         get() {
             val metricCutoffs =
-                MetricCutoffStrategy.generateNStrategies(SimpleGrowthMetric(), security, moneyAvailable(), 10)
+                MetricCutoffStrategy.generateNStrategies(SimpleGrowthMetric(), security, moneyAvailable(), 10) +
+                        MetricCutoffStrategy.generateNStrategies(
+                            VolumeAmplifiedGrowth(10),
+                            security,
+                            moneyAvailable(),
+                            10
+                        )
             val custom = listOf(
                 BlankStrategy(security, moneyAvailable()),
                 MetricCutoffStrategy(SimpleGrowthMetric(), security, moneyAvailable(), BigDecimal(0)),

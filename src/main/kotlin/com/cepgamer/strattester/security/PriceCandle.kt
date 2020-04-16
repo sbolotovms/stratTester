@@ -2,16 +2,23 @@ package com.cepgamer.strattester.security
 
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.math.RoundingMode
 
 data class PriceCandle(
-    val open: BigDecimal,
-    val close: BigDecimal,
-    val low: BigDecimal,
-    val high: BigDecimal,
-    val volume: BigDecimal,
+    open: BigDecimal,
+    close: BigDecimal,
+    low: BigDecimal,
+    high: BigDecimal,
+    volume: BigDecimal,
     val openTimestamp: Int,
     val timespan: Int
 ) {
+    val open = open.setScale(5, RoundingMode.HALF_UP)
+    val close = close.setScale(5, RoundingMode.HALF_UP)
+    val low = low.setScale(5, RoundingMode.HALF_UP)
+    val high = high.setScale(5, RoundingMode.HALF_UP)
+    val volume = volume.setScale(5, RoundingMode.HALF_UP)
+
     constructor(
         open: Int,
         close: Int,
@@ -29,4 +36,7 @@ data class PriceCandle(
         openTimestamp,
         timespan
     )
+
+    init {
+    }
 }
