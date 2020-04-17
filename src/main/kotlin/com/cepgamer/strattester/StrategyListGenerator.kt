@@ -13,10 +13,11 @@ class StrategyListGenerator(val security: BaseSecurity) {
 
     private fun generateMetricStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
         val list =
-            MetricCutoffStrategy.generateNStrategies(
+            MetricCutoffStrategy.generateNbyMStrategies(
                 metric(),
                 security,
                 moneyAvailable(),
+                10,
                 10
             )
         return list

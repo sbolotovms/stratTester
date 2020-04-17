@@ -4,7 +4,6 @@ import com.cepgamer.strattester.metric.BaseMetric
 import com.cepgamer.strattester.security.BaseSecurity
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
-import com.cepgamer.strattester.security.Transaction
 import java.math.BigDecimal
 
 class MetricCutoffStrategy(
@@ -29,24 +28,29 @@ class MetricCutoffStrategy(
 
     companion object {
         /**
-         * Generates N + 1 strategies from 0 to 1 with 1/N step.
+         * Generates (N + 1) * (M + 1) strategies from 0 to 1 with 1/N step for good signal and 1/M step for bad signal.
          */
-        fun generateNStrategies(
+        fun generateNbyMStrategies(
             metric: BaseMetric,
             security: BaseSecurity,
             moneyAvailable: Dollar,
-            n: Int
+            n: Int,
+            m: Int
         ): List<() -> BaseStrategy> {
             return (0..n).map { i ->
-                {
-                    MetricCutoffStrategy(
-                        metric,
-                        security,
-                        moneyAvailable.copy(),
-                        BigDecimal(i) / BigDecimal(n),
-                        BigDecimal(i) / BigDecimal(n)
-                    )
+                (0..m).map { j ->
+                    {
+                        MetricCutoffStrategy(
+                            metric,
+                            security,
+                            moneyAvailable.copy(),
+                            BigDecimal(i) / BigDecimal(n),
+                            BigDecimal(j) / BigDecimal(n)
+                        )
+                    }
                 }
+            }.reduce { list1: List<() -> MetricCutoffStrategy>, list2: List<() -> MetricCutoffStrategy> ->
+                list1 + list2
             }
         }
     }

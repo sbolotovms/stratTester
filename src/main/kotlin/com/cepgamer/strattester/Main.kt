@@ -53,6 +53,7 @@ object Main {
         println("""
 
 ----------------------------------------------------------------
+            Total strats: ${strats.size}
             Any successful strats: ${strats.find { it.moneyAvailable.quantity > moneyAvailable().quantity } != null}
             Successful strats: ${strats.filter { it.moneyAvailable.quantity > moneyAvailable().quantity }}
 ----------------------------------------------------------------
