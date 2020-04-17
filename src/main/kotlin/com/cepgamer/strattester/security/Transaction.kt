@@ -19,8 +19,9 @@ data class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val
                 throw TransactionFailedException("Not enough money")
             }
 
-            val quantity = money.quantity.divide(priceCandle.high, RoundingMode.FLOOR)
+            val quantity = money.quantity.divide(priceCandle.high, RoundingMode.FLOOR).setScale(0, RoundingMode.FLOOR).setScale(5)
             money.quantity -= priceCandle.high * quantity
+            money.quantity = money.quantity.setScale(5)
 
             return Transaction(security, quantity, Action.BUY) to Position(
                 security,

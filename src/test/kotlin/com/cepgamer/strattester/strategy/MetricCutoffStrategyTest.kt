@@ -24,14 +24,14 @@ class MetricCutoffStrategyTest {
 
         strategy.priceUpdate(TestConstants.growthCandle)
         Assert.assertEquals(
-            listOf(Transaction(security, BigDecimal(5_000), Transaction.Action.BUY)),
+            listOf(Transaction(security, BigDecimal(5_000).setScale(5), Transaction.Action.BUY)),
             strategy.transactions
         )
         Assert.assertEquals(
             listOf(
                 Position(
                     security,
-                    BigDecimal(5_000),
+                    BigDecimal(5_000).setScale(5),
                     BigDecimal(2).setScale(5),
                     strategy.openPositions[0].purchaseDate,
                     Position.Status.OPEN

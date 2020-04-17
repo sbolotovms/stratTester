@@ -19,11 +19,11 @@ class TransactionTests {
         val (transaction, position) = Transaction.purchase(security, TestConstants.growthCandle, money)
 
         Assert.assertEquals(BigDecimal.ZERO.setScale(5), money.quantity)
-        Assert.assertEquals(Transaction(security, BigDecimal(5_000), Transaction.Action.BUY), transaction)
+        Assert.assertEquals(Transaction(security, BigDecimal(5_000).setScale(5), Transaction.Action.BUY), transaction)
         Assert.assertEquals(
             Position(
                 security,
-                BigDecimal(5_000),
+                BigDecimal(5_000).setScale(5),
                 BigDecimal(2).setScale(5),
                 position.purchaseDate,
                 Position.Status.OPEN
