@@ -6,7 +6,7 @@ import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
 import java.math.BigDecimal
 
-class MetricCutoffStrategy(
+open class MetricCutoffStrategy(
     metric: BaseMetric,
     security: BaseSecurity,
     moneyAvailable: Dollar,

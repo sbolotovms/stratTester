@@ -50,12 +50,16 @@ abstract class BaseStrategy(
     fun closePositions(priceCandle: PriceCandle): Action {
         if (openPositions.size >= 0) {
             ArrayList(openPositions).forEach { open ->
-                val transaction = Transaction.sell(open, priceCandle, moneyAvailable)
-                updateData(transaction)
+                closePosition(priceCandle, open)
             }
             return Action.SELL
         }
         return Action.HOLD
+    }
+
+    fun closePosition(priceCandle: PriceCandle, position: Position) {
+        val transaction = Transaction.sell(position, priceCandle, moneyAvailable)
+        updateData(transaction)
     }
 
     override fun toString(): String {
