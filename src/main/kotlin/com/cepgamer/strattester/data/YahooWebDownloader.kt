@@ -43,13 +43,23 @@ class YahooWebDownloader(
             return json
         }
 
-        fun getYahooHourlyData(symbol: String, time1: Int, time2: Int, month: String): String =
-            File(getFileName(symbol, month)).let { file ->
-                return if (file.exists()) {
-                    file.readText()
-                } else {
-                    writeYahooHourlyData(symbol, time1, time2, month)
+        fun getYahooHourlyData(
+            symbol: String,
+            time1: Int,
+            time2: Int,
+            month: String,
+            useCache: Boolean = false
+        ): String =
+            if (useCache) {
+                File(getFileName(symbol, month)).let { file ->
+                    return if (file.exists()) {
+                        file.readText()
+                    } else {
+                        writeYahooHourlyData(symbol, time1, time2, month)
+                    }
                 }
+            } else {
+                writeYahooHourlyData(symbol, time1, time2, month)
             }
     }
 }
