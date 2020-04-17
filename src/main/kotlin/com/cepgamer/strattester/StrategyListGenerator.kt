@@ -23,27 +23,50 @@ class StrategyListGenerator(val security: BaseSecurity) {
         return list
     }
 
-    private fun generateInverseMetricStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
-        return generateMetricStrategies { InverseMetric(metric()) }
+    private fun generatePLCutoffStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
+        val list =
+            ProfitLossLockStrategy.generateNbyMStrategies(
+                metric(),
+                security,
+                moneyAvailable(),
+                listOf(1, 2, 3, 4, 5),
+                listOf(1, 2, 3, 4, 5),
+                10,
+                10
+            )
+        return list
     }
 
-    private fun generateSwappedSignalMetricStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
-        return generateMetricStrategies { SwapSignalMetric(metric()) }
+    private fun generateInverseMetricStrategies(
+        metric: () -> BaseMetric,
+        strats: (() -> BaseMetric) -> List<() -> BaseStrategy>
+    ): List<() -> BaseStrategy> {
+        return strats { InverseMetric(metric()) }
     }
 
-    val buyStrategy = BuyStrategy(security, moneyAvailable())
+    private fun generateSwappedSignalMetricStrategies(
+        metric: () -> BaseMetric,
+        strats: (() -> BaseMetric) -> List<() -> BaseStrategy>
+    ): List<() -> BaseStrategy> {
+        return strats { SwapSignalMetric(metric()) }
+    }
 
     private fun generateInverseStrategies(strats: List<() -> BaseStrategy>): List<() -> BaseStrategy> {
         return strats.map { { InverseStrategy(it(), security, moneyAvailable()) } }
     }
 
-    private fun generateAllMetricStrategies(metric: () -> BaseMetric): List<BaseStrategy> {
-        val allStrats = generateMetricStrategies(metric) +
-                generateInverseMetricStrategies(metric) +
-                generateSwappedSignalMetricStrategies(metric)
+    private fun generateAllStrategies(
+        metric: () -> BaseMetric,
+        strats: (() -> BaseMetric) -> List<() -> BaseStrategy>
+    ): List<BaseStrategy> {
+        val allStrats = strats(metric) +
+                generateInverseMetricStrategies(metric, strats) +
+                generateSwappedSignalMetricStrategies(metric, strats)
         val alllStrats = allStrats + generateInverseStrategies(allStrats)
         return alllStrats.map { it() }
     }
+
+    val buyStrategy = BuyStrategy(security, moneyAvailable())
 
     fun generate(): List<BaseStrategy> {
         val custom = listOf(
@@ -63,10 +86,16 @@ class StrategyListGenerator(val security: BaseSecurity) {
             ),
             BuyStrategy(security, moneyAvailable())
         )
-        val final = generateAllMetricStrategies { SimpleGrowthMetric() } +
-                generateAllMetricStrategies { VolumeAmplifiedGrowth(10) } +
-                generateAllMetricStrategies { VolumeAmplifiedGrowth(20) } +
-                generateAllMetricStrategies { VolumeAmplifiedGrowth(30) }
+        val metricCutoffs = generateAllStrategies({ SimpleGrowthMetric() }, this::generateMetricStrategies) +
+                generateAllStrategies({ VolumeAmplifiedGrowth(10) }, this::generateMetricStrategies) +
+                generateAllStrategies({ VolumeAmplifiedGrowth(20) }, this::generateMetricStrategies) +
+                generateAllStrategies({ VolumeAmplifiedGrowth(30) }, this::generateMetricStrategies)
+        val plCutoffs = generateAllStrategies({ SimpleGrowthMetric() }, this::generatePLCutoffStrategies) +
+                generateAllStrategies({ VolumeAmplifiedGrowth(10) }, this::generatePLCutoffStrategies) +
+                generateAllStrategies({ VolumeAmplifiedGrowth(20) }, this::generatePLCutoffStrategies) +
+                generateAllStrategies({ VolumeAmplifiedGrowth(30) }, this::generatePLCutoffStrategies)
+
+        val final = metricCutoffs + plCutoffs + custom
         return final
     }
 }

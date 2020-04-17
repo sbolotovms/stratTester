@@ -65,8 +65,8 @@ object Main {
         dailyRunner.run()
         runner.run()
 
-        val dailyRes = stratsReport(dailyStrats.sortedByDescending { it.moneyAvailable.quantity })
-        val res = stratsReport(strats.sortedByDescending { it.moneyAvailable.quantity })
+        val dailyRes = stratsReport(dailyStrats.filter { it.transactions.isNotEmpty() }.sortedBy { it.moneyAvailable.quantity })
+        val res = stratsReport(strats.filter { it.transactions.isNotEmpty() }.sortedBy { it.moneyAvailable.quantity })
 
         File("dailyRes.txt").apply {
             createNewFile()
