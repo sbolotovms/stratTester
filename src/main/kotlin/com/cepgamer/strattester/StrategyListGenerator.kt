@@ -3,10 +3,7 @@ package com.cepgamer.strattester
 import com.cepgamer.strattester.metric.*
 import com.cepgamer.strattester.security.BaseSecurity
 import com.cepgamer.strattester.security.Dollar
-import com.cepgamer.strattester.strategy.BaseStrategy
-import com.cepgamer.strattester.strategy.BlankStrategy
-import com.cepgamer.strattester.strategy.BuyStrategy
-import com.cepgamer.strattester.strategy.MetricCutoffStrategy
+import com.cepgamer.strattester.strategy.*
 import java.math.BigDecimal
 
 class StrategyListGenerator(val security: BaseSecurity) {
@@ -14,7 +11,7 @@ class StrategyListGenerator(val security: BaseSecurity) {
         return Dollar(10_000)
     }
 
-    private fun generateMetricStrategies(metric: () -> BaseMetric): List<BaseStrategy> {
+    private fun generateMetricStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
         val list =
             MetricCutoffStrategy.generateNStrategies(
                 metric(),
@@ -25,20 +22,26 @@ class StrategyListGenerator(val security: BaseSecurity) {
         return list
     }
 
-    private fun generateInverseMetricStrategies(metric: () -> BaseMetric): List<BaseStrategy> {
+    private fun generateInverseMetricStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
         return generateMetricStrategies { InverseMetric(metric()) }
     }
 
-    private fun generateSwappedSignalMetricStrategies(metric: () -> BaseMetric): List<BaseStrategy> {
+    private fun generateSwappedSignalMetricStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
         return generateMetricStrategies { SwapSignalMetric(metric()) }
     }
 
     val buyStrategy = BuyStrategy(security, moneyAvailable())
 
+    private fun generateInverseStrategies(strats: List<() -> BaseStrategy>): List<() -> BaseStrategy> {
+        return strats.map { { InverseStrategy(it(), security, moneyAvailable()) } }
+    }
+
     private fun generateAllMetricStrategies(metric: () -> BaseMetric): List<BaseStrategy> {
-        return generateMetricStrategies(metric) +
+        val allStrats = generateMetricStrategies(metric) +
                 generateInverseMetricStrategies(metric) +
                 generateSwappedSignalMetricStrategies(metric)
+        val alllStrats = allStrats + generateInverseStrategies(allStrats)
+        return alllStrats.map { it() }
     }
 
     fun generate(): List<BaseStrategy> {

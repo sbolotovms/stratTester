@@ -36,15 +36,17 @@ class MetricCutoffStrategy(
             security: BaseSecurity,
             moneyAvailable: Dollar,
             n: Int
-        ): List<BaseStrategy> {
+        ): List<() -> BaseStrategy> {
             return (0..n).map { i ->
-                MetricCutoffStrategy(
-                    metric,
-                    security,
-                    moneyAvailable.copy(),
-                    BigDecimal(i) / BigDecimal(n),
-                    BigDecimal(i) / BigDecimal(n)
-                )
+                {
+                    MetricCutoffStrategy(
+                        metric,
+                        security,
+                        moneyAvailable.copy(),
+                        BigDecimal(i) / BigDecimal(n),
+                        BigDecimal(i) / BigDecimal(n)
+                    )
+                }
             }
         }
     }
