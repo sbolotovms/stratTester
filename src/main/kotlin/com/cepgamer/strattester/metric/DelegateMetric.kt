@@ -7,4 +7,10 @@ abstract class DelegateMetric(val otherMetric: BaseMetric): BaseMetric() {
         otherMetric.newData(priceCandle)
         super.newData(priceCandle)
     }
+
+    override fun toString(): String {
+        return """
+            underlying delegated metric: $otherMetric
+        """ + super.toString()
+    }
 }

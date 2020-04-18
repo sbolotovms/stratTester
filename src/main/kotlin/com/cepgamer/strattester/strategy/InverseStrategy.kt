@@ -17,4 +17,10 @@ class InverseStrategy(val strategy: BaseStrategy, security: BaseSecurity, money:
         }
         return Action.HOLD
     }
+
+    override fun toString(): String {
+        return super.toString() + """
+            Underlying strategy: $strategy
+        """
+    }
 }

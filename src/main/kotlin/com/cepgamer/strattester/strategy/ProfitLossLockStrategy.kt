@@ -12,10 +12,10 @@ class ProfitLossLockStrategy(
     moneyAvailable: Dollar,
     val profitCutoffPercentage: BigDecimal = BigDecimal(5).setScale(5),
     val lossCutoffPercentage: BigDecimal = BigDecimal(5).setScale(5),
+    var sinceLastSaleCurrent: Int = 0,
     goodSignalCutoff: BigDecimal = BigDecimal.ZERO,
     badSignalCutoff: BigDecimal = BigDecimal.ZERO
 ) : MetricCutoffStrategy(metric, security, moneyAvailable, goodSignalCutoff, badSignalCutoff) {
-    var sinceLastSaleCurrent: Int = 0
     var sinceLastSaleWait: Int = 5
 
     override fun priceUpdate(priceCandle: PriceCandle): Action {
@@ -45,6 +45,13 @@ class ProfitLossLockStrategy(
         }
     }
 
+    override fun toString(): String {
+        return """
+                Profit cutoff: $profitCutoffPercentage
+                Loss cutoff: $lossCutoffPercentage
+            """ + super.toString()
+    }
+
     companion object {
         /**
          * Generates (N + 1) * (M + 1) strategies from 0 to 1 with 1/N step for good signal and 1/M step for bad signal.
@@ -55,29 +62,37 @@ class ProfitLossLockStrategy(
             moneyAvailable: Dollar,
             profitLockPercentages: List<Int>,
             lossLockPercentages: List<Int>,
+            sinceLastSaleCurrent: List<Int>,
             n: Int,
             m: Int
         ): List<() -> BaseStrategy> {
             val list =
                 profitLockPercentages.map { profit ->
                     lossLockPercentages.map { loss ->
-                        (0..n).map { i ->
-                            (0..m).map { j ->
-                                {
-                                    ProfitLossLockStrategy(
-                                        metric,
-                                        security,
-                                        moneyAvailable.copy(),
-                                        BigDecimal(profit).setScale(5),
-                                        BigDecimal(loss).setScale(5),
-                                        BigDecimal(i) / BigDecimal(n),
-                                        BigDecimal(j) / BigDecimal(n)
-                                    )
+                        sinceLastSaleCurrent.map { since ->
+                            (0..n).map { i ->
+                                (0..m).map { j ->
+                                    {
+                                        ProfitLossLockStrategy(
+                                            metric,
+                                            security,
+                                            moneyAvailable.copy(),
+                                            BigDecimal(profit).setScale(5),
+                                            BigDecimal(loss).setScale(5),
+                                            since,
+                                            BigDecimal(i) / BigDecimal(n),
+                                            BigDecimal(j) / BigDecimal(n)
+                                        )
+                                    }
                                 }
                             }
-                        }.reduce { list1: List<() -> ProfitLossLockStrategy>, list2: List<() -> ProfitLossLockStrategy> ->
-                            list1 + list2
+                                .reduce { list1: List<() -> ProfitLossLockStrategy>, list2: List<() -> ProfitLossLockStrategy> ->
+                                    list1 + list2
+                                }
                         }
+                            .reduce { list1: List<() -> ProfitLossLockStrategy>, list2: List<() -> ProfitLossLockStrategy> ->
+                                list1 + list2
+                            }
                     }.reduce { list1: List<() -> ProfitLossLockStrategy>, list2: List<() -> ProfitLossLockStrategy> ->
                         list1 + list2
                     }

@@ -31,6 +31,7 @@ class StrategyListGenerator(val security: BaseSecurity) {
                 moneyAvailable(),
                 listOf(1, 2, 3, 4, 5),
                 listOf(1, 2, 3, 4, 5),
+                listOf(5, 10, 25, 100, 200),
                 10,
                 10
             )
@@ -68,7 +69,11 @@ class StrategyListGenerator(val security: BaseSecurity) {
 
     val buyStrategy = BuyStrategy(security, moneyAvailable())
 
-    fun generate(): List<BaseStrategy> {
+    fun generate(
+        haveCustom: Boolean = false,
+        haveMetricCutoffs: Boolean = false,
+        havePLCutoffs: Boolean = false
+    ): List<BaseStrategy> {
         val custom = listOf(
             BlankStrategy(security, moneyAvailable()),
             MetricCutoffStrategy(SimpleGrowthMetric(), security, moneyAvailable(), BigDecimal(0)),
@@ -95,7 +100,13 @@ class StrategyListGenerator(val security: BaseSecurity) {
                 generateAllStrategies({ VolumeAmplifiedGrowth(20) }, this::generatePLCutoffStrategies) +
                 generateAllStrategies({ VolumeAmplifiedGrowth(30) }, this::generatePLCutoffStrategies)
 
-        val final = metricCutoffs + plCutoffs + custom
+        val final = if (haveCustom) custom else {
+            emptyList()
+        } + if (haveMetricCutoffs) metricCutoffs else {
+            emptyList()
+        } + if (havePLCutoffs) plCutoffs else {
+            emptyList()
+        }
         return final
     }
 }

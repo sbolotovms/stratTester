@@ -23,6 +23,10 @@ abstract class BaseMetric {
             return signal
         }
 
+    override fun toString(): String {
+        return "Metric: ${this::class.simpleName}"
+    }
+
     protected abstract val badSignalInternal: BigDecimal
 
     val badSignal: BigDecimal

@@ -20,8 +20,8 @@ object Main {
 
     fun moneyAvailable(): Dollar = Dollar(BigDecimal(10000))
 
-    fun stratsReport(strats: List<BaseStrategy>): String {
-        return strats.toString() + """
+    fun stratsReport(strats: List<BaseStrategy>, reportAll: Boolean = false): String {
+        return """${if (reportAll) strats.toString() else ""}
 ----------------------------------------------------------------
             Total strats: ${strats.size}
             Any successful strats: ${strats.find { it.moneyAvailable.quantity > moneyAvailable().quantity } != null}
@@ -52,8 +52,8 @@ object Main {
             security to it
         }
 
-        val dailyStrats = StrategyListGenerator(security).generate()
-        val strats = StrategyListGenerator(security).generate()
+        val dailyStrats = StrategyListGenerator(security).generate(haveCustom = true, havePLCutoffs = true)
+        val strats = StrategyListGenerator(security).generate(haveCustom = true, havePLCutoffs = true)
 
         val dailyRunner = SavedDataStrategyRunner(
             dailyStrats, listOf(dailyData)
@@ -65,7 +65,8 @@ object Main {
         dailyRunner.run()
         runner.run()
 
-        val dailyRes = stratsReport(dailyStrats.filter { it.transactions.isNotEmpty() }.sortedBy { it.moneyAvailable.quantity })
+        val dailyRes =
+            stratsReport(dailyStrats.filter { it.transactions.isNotEmpty() }.sortedBy { it.moneyAvailable.quantity })
         val res = stratsReport(strats.filter { it.transactions.isNotEmpty() }.sortedBy { it.moneyAvailable.quantity })
 
         File("dailyRes.txt").apply {

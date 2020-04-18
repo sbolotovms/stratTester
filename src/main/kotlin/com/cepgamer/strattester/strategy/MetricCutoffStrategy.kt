@@ -26,6 +26,13 @@ open class MetricCutoffStrategy(
         return Action.HOLD
     }
 
+    override fun toString(): String {
+        return """
+            Good signal cutoff: $goodSignalCutoff
+            Bad signal cutoff: $badSignalCutoff
+        """ + super.toString()
+    }
+
     companion object {
         /**
          * Generates (N + 1) * (M + 1) strategies from 0 to 1 with 1/N step for good signal and 1/M step for bad signal.
