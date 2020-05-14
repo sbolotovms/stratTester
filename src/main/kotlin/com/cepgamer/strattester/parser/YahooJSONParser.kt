@@ -29,13 +29,21 @@ class YahooJSONParser(private val json: String?, filename: String? = null) : Bas
     private fun parseJsonCandles(timestamps: IntStream, candles: JsonObject): List<PriceCandle> {
         val timestamp = timestamps.toList()
         val bigDecimalConverter = { it: JsonElement ->
-            BigDecimal(it.primitive.content)
+            if (it.primitive.content != "null") {
+                BigDecimal(it.primitive.content)
+            }
+            else {
+                BigDecimal.ZERO
+            }
         }
-        val lows = candles.getArray("low").stream().map(bigDecimalConverter).toList()
-        val volumes = candles.getArray("volume").stream().map(bigDecimalConverter).toList()
-        val opens = candles.getArray("open").stream().map(bigDecimalConverter).toList()
-        val highs = candles.getArray("high").stream().map(bigDecimalConverter).toList()
-        val closes = candles.getArray("close").stream().map(bigDecimalConverter).toList()
+        val zeroFilter = {it: BigDecimal ->
+            it != BigDecimal.ZERO
+        }
+        val lows = candles.getArray("low").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
+        val volumes = candles.getArray("volume").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
+        val opens = candles.getArray("open").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
+        val highs = candles.getArray("high").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
+        val closes = candles.getArray("close").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
 
         assert(
             timestamp.size == lows.size
@@ -47,7 +55,7 @@ class YahooJSONParser(private val json: String?, filename: String? = null) : Bas
 
         val candlesList = ArrayList<PriceCandle>(timestamp.size)
         val range = timestamp[1] - timestamp[0]
-        for (i in timestamp.indices) {
+        for (i in volumes.indices) {
             candlesList.add(
                 PriceCandle(
                     opens[i],

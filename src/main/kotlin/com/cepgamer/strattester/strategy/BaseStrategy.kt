@@ -1,6 +1,7 @@
 package com.cepgamer.strattester.strategy
 
 import com.cepgamer.strattester.security.*
+import com.cepgamer.strattester.util.StratLogger
 
 abstract class BaseStrategy(
     val security: BaseSecurity,
@@ -42,7 +43,7 @@ abstract class BaseStrategy(
             updateData(transaction)
             return Action.BUY
         } catch (e: Transaction.TransactionFailedException) {
-            println("Purchase failed: ${e.message}")
+            StratLogger.i("Purchase failed: ${e.message}")
         }
         return Action.HOLD
     }
