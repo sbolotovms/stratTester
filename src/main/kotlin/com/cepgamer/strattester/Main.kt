@@ -12,7 +12,7 @@ import java.io.File
 import java.math.BigDecimal
 
 object Main {
-    val symbol = "MSFT"
+    val symbol = "TVIX"
     val security = Stock(symbol)
 
     fun moneyAvailable(): Dollar = Dollar(BigDecimal(10000))
@@ -54,8 +54,18 @@ object Main {
             security to it
         }
 
-        val dailyStrats = StrategyListGenerator(security).generate(haveCustom = true, havePLCutoffs = true)
-        val strats = StrategyListGenerator(security).generate(haveCustom = true, havePLCutoffs = true)
+        val dailyStrats = StrategyListGenerator(security).generate(
+            haveCustom = true,
+            haveMetricCutoffs = false,
+            havePLCutoffs = true,
+            haveInverse = false
+        )
+        val strats = StrategyListGenerator(security).generate(
+            haveCustom = true,
+            haveMetricCutoffs = false,
+            havePLCutoffs = true,
+            haveInverse = false
+        )
 
         val dailyRunner = SavedDataStrategyRunner(
             dailyStrats, listOf(dailyData)
@@ -67,7 +77,7 @@ object Main {
         dailyRunner.run()
         runner.run()
 
-        val maxPossible = data.fold(data.first().second.close to BigDecimal(0).setScale(5), {acc, pair ->
+        val maxPossible = data.fold(data.first().second.close to BigDecimal(0).setScale(5), { acc, pair ->
             return@fold if (acc.first > pair.second.close) {
                 pair.second.close to acc.second + (acc.first - pair.second.close)
             } else pair.second.close to acc.second

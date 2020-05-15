@@ -58,12 +58,17 @@ class StrategyListGenerator(val security: BaseSecurity) {
 
     private fun generateAllStrategies(
         metric: () -> BaseMetric,
-        strats: (() -> BaseMetric) -> List<() -> BaseStrategy>
+        strats: (() -> BaseMetric) -> List<() -> BaseStrategy>,
+        haveInverse: Boolean
     ): List<BaseStrategy> {
         val allStrats = strats(metric) +
                 generateInverseMetricStrategies(metric, strats) +
                 generateSwappedSignalMetricStrategies(metric, strats)
-        val alllStrats = allStrats + generateInverseStrategies(allStrats)
+        val alllStrats = allStrats +
+                if (haveInverse) generateInverseStrategies(allStrats)
+                else {
+                    emptyList()
+                }
         return alllStrats.map { it() }
     }
 
@@ -72,7 +77,8 @@ class StrategyListGenerator(val security: BaseSecurity) {
     fun generate(
         haveCustom: Boolean = false,
         haveMetricCutoffs: Boolean = false,
-        havePLCutoffs: Boolean = false
+        havePLCutoffs: Boolean = false,
+        haveInverse: Boolean = true
     ): List<BaseStrategy> {
         val custom = listOf(
             BlankStrategy(security, moneyAvailable()),
@@ -91,14 +97,15 @@ class StrategyListGenerator(val security: BaseSecurity) {
             ),
             BuyStrategy(security, moneyAvailable())
         )
-        val metricCutoffs = generateAllStrategies({ SimpleGrowthMetric() }, this::generateMetricStrategies) +
-                generateAllStrategies({ VolumeAmplifiedGrowth(10) }, this::generateMetricStrategies) +
-                generateAllStrategies({ VolumeAmplifiedGrowth(20) }, this::generateMetricStrategies) +
-                generateAllStrategies({ VolumeAmplifiedGrowth(30) }, this::generateMetricStrategies)
-        val plCutoffs = generateAllStrategies({ SimpleGrowthMetric() }, this::generatePLCutoffStrategies) +
-                generateAllStrategies({ VolumeAmplifiedGrowth(10) }, this::generatePLCutoffStrategies) +
-                generateAllStrategies({ VolumeAmplifiedGrowth(20) }, this::generatePLCutoffStrategies) +
-                generateAllStrategies({ VolumeAmplifiedGrowth(30) }, this::generatePLCutoffStrategies)
+        val metricCutoffs =
+            generateAllStrategies({ SimpleGrowthMetric() }, this::generateMetricStrategies, haveInverse) +
+                    generateAllStrategies({ VolumeAmplifiedGrowth(10) }, this::generateMetricStrategies, haveInverse) +
+                    generateAllStrategies({ VolumeAmplifiedGrowth(20) }, this::generateMetricStrategies, haveInverse) +
+                    generateAllStrategies({ VolumeAmplifiedGrowth(30) }, this::generateMetricStrategies, haveInverse)
+        val plCutoffs = generateAllStrategies({ SimpleGrowthMetric() }, this::generatePLCutoffStrategies, haveInverse) +
+                generateAllStrategies({ VolumeAmplifiedGrowth(10) }, this::generatePLCutoffStrategies, haveInverse) +
+                generateAllStrategies({ VolumeAmplifiedGrowth(20) }, this::generatePLCutoffStrategies, haveInverse) +
+                generateAllStrategies({ VolumeAmplifiedGrowth(30) }, this::generatePLCutoffStrategies, haveInverse)
 
         val final = if (haveCustom) custom else {
             emptyList()

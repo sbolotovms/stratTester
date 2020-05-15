@@ -6,8 +6,8 @@ import com.cepgamer.strattester.security.Dollar
 
 abstract class MetricStrategy(val metric: BaseMetric, security: BaseSecurity, moneyAvailable: Dollar) : BaseStrategy(security, moneyAvailable) {
     override fun toString(): String {
-        return """
+        return super.toString() + """
             Underlying metric: $metric
-        """ + super.toString()
+        """
     }
 }

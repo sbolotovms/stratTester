@@ -27,10 +27,10 @@ open class MetricCutoffStrategy(
     }
 
     override fun toString(): String {
-        return """
+        return super.toString() + """
             Good signal cutoff: $goodSignalCutoff
             Bad signal cutoff: $badSignalCutoff
-        """ + super.toString()
+        """
     }
 
     companion object {

@@ -21,7 +21,7 @@ class ProfitLossLockStrategy(
     override fun priceUpdate(priceCandle: PriceCandle): Action {
         val sellingPrice = priceCandle.low
         var didSell = false
-        for (position in openPositions) {
+        for (position in ArrayList(openPositions)) {
             val isProfit = position.purchasePrice < sellingPrice
             val difference = ((position.purchasePrice / sellingPrice) - BigDecimal(1).setScale(5)).abs()
             if (isProfit && difference >= profitCutoffPercentage) {
@@ -46,10 +46,10 @@ class ProfitLossLockStrategy(
     }
 
     override fun toString(): String {
-        return """
+        return super.toString() + """
                 Profit cutoff: $profitCutoffPercentage
                 Loss cutoff: $lossCutoffPercentage
-            """ + super.toString()
+            """
     }
 
     companion object {
