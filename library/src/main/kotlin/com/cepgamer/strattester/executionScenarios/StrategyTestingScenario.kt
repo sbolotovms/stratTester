@@ -18,7 +18,7 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         const val mar1 = YahooWebDownloader.mar1
         const val apr1 = YahooWebDownloader.apr1
         const val may1 = YahooWebDownloader.may1
-        val availableMonths = setOf("feb", "mar", "apr", "may")
+        val availableMonths = setOf("feb", "mar", "apr")//, "may")
 
         private val monthsMapping = mapOf(
             "feb" to (feb1 to mar1),

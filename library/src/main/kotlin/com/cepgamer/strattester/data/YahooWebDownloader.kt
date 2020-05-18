@@ -1,6 +1,8 @@
 package com.cepgamer.strattester.data
 
+import com.cepgamer.strattester.util.StratLogger
 import java.io.File
+import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -33,12 +35,21 @@ class YahooWebDownloader(
 
         private fun getFileName(symbol: String, month: String) = "$dataFolder$symbol/$month.json"
 
-        private fun writeYahooHourlyData(symbol: String, time1: Int, time2: Int, month: String): String {
+        private fun writeYahooHourlyData(
+            symbol: String,
+            time1: Int,
+            time2: Int,
+            month: String
+        ): String {
             val json = YahooWebDownloader(symbol, time1, time2, "1h", false).download()
-            val file = File(getFileName(symbol, month))
-            file.parentFile.mkdirs()
-            file.createNewFile()
-            file.writeText(json)
+            try {
+                val file = File(getFileName(symbol, month))
+                file.parentFile.mkdirs()
+                file.createNewFile()
+                file.writeText(json)
+            } catch (e: Exception) {
+                StratLogger.i("Unable to write to file.")
+            }
 
             return json
         }
