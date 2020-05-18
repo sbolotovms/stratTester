@@ -12,8 +12,21 @@ import com.cepgamer.strattester.strategy.BaseStrategy
 import java.io.File
 import java.math.BigDecimal
 
-object StrategyTestingScenario {
-    val symbol = "TVIX"
+class StrategyTestingScenario(val testingMonts: Set<String>, val symbol: String) {
+    companion object {
+        const val feb1 = YahooWebDownloader.feb1
+        const val mar1 = YahooWebDownloader.mar1
+        const val apr1 = YahooWebDownloader.apr1
+        const val may1 = YahooWebDownloader.may1
+        val months = setOf("feb", "mar", "apr", "may")
+
+        private val monthsMapping = mapOf(
+            "feb" to (feb1 to mar1),
+            "mar" to (mar1 to apr1),
+            "apr" to (apr1 to may1)
+        )
+    }
+
     val security = Stock(symbol)
 
     fun moneyAvailable(): Dollar = Dollar(BigDecimal(10000))
@@ -33,20 +46,13 @@ object StrategyTestingScenario {
         """
     }
 
+    val yahooJsons: List<String>
+        get() = monthsMapping.entries.filter { months.contains(it.key) }.map {
+            YahooWebDownloader.getYahooHourlyData(symbol, it.value.first, it.value.second, it.key)
+        }
+
     fun runStrategyTests() {
-        val jsonMar = YahooWebDownloader.getYahooHourlyData(
-            symbol,
-            YahooWebDownloader.feb1,
-            YahooWebDownloader.mar1,
-            "mar"
-        )
-        val jsonApr = YahooWebDownloader.getYahooHourlyData(
-            symbol,
-            YahooWebDownloader.mar1,
-            YahooWebDownloader.apr1,
-            "apr"
-        )
-        val rawData = YahooJSONParser(jsonMar).parse() + YahooJSONParser(jsonApr).parse()
+        val rawData = yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
         val data = rawData.map {
             security as BaseSecurity to it
         }
