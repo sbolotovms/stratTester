@@ -12,13 +12,13 @@ import com.cepgamer.strattester.strategy.BaseStrategy
 import java.io.File
 import java.math.BigDecimal
 
-class StrategyTestingScenario(val testingMonts: Set<String>, val symbol: String) {
+class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String) {
     companion object {
         const val feb1 = YahooWebDownloader.feb1
         const val mar1 = YahooWebDownloader.mar1
         const val apr1 = YahooWebDownloader.apr1
         const val may1 = YahooWebDownloader.may1
-        val months = setOf("feb", "mar", "apr", "may")
+        val availableMonths = setOf("feb", "mar", "apr", "may")
 
         private val monthsMapping = mapOf(
             "feb" to (feb1 to mar1),
@@ -47,7 +47,7 @@ class StrategyTestingScenario(val testingMonts: Set<String>, val symbol: String)
     }
 
     val yahooJsons: List<String>
-        get() = monthsMapping.entries.filter { months.contains(it.key) }.map {
+        get() = monthsMapping.entries.filter { testingMonths.contains(it.key) }.map {
             YahooWebDownloader.getYahooHourlyData(symbol, it.value.first, it.value.second, it.key)
         }
 

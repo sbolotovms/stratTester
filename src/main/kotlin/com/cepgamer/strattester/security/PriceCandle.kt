@@ -10,7 +10,7 @@ data class PriceCandle(
     var low: BigDecimal,
     var high: BigDecimal,
     var volume: BigDecimal,
-    val openTimestamp: Int,
+    val openTimestamp: Long,
     val timespan: Int
 ) {
     constructor(
@@ -27,7 +27,7 @@ data class PriceCandle(
         BigDecimal(low),
         BigDecimal(high),
         BigDecimal(volume),
-        openTimestamp,
+        openTimestamp.toLong(),
         timespan
     )
 
