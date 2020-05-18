@@ -3,7 +3,10 @@ plugins {
     id 'application'
 }
 
-
 application {
     mainClassName = "com.cepgamer.strattester.Main"
+}
+
+dependencies {
+    compile ":library"
 }
