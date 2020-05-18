@@ -1,0 +1,9 @@
+plugins {
+    id 'idea'
+    id 'application'
+}
+
+
+application {
+    mainClassName = "com.cepgamer.strattester.Main"
+}

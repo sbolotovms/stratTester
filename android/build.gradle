@@ -4,13 +4,16 @@ repositories {
     jcenter()
     mavenCentral()
 }
+
+dependencies {
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId 'org.cepgamer.stratTester.android'
         minSdkVersion 25
         targetSdkVersion 29
         versionCode 1
@@ -21,7 +24,4 @@ android {
             minifyEnabled false
         }
     }
-}
-
-dependencies {
 }
