@@ -1,6 +1,7 @@
 plugins {
     id 'idea'
     id 'application'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 application {
@@ -8,5 +9,17 @@ application {
 }
 
 dependencies {
-    compile ":library"
+    compile project(":library")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }

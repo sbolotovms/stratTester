@@ -1,7 +1,6 @@
 package com.cepgamer.strattester
 
 import com.cepgamer.strattester.executionScenarios.StrategyTestingScenario
-import com.cepgamer.strattester.security.Stock
 
 object Main {
     @JvmStatic

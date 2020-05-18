@@ -1,4 +1,9 @@
 
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android-extensions'
+}
+
 repositories {
     google()
     jcenter()
@@ -6,10 +11,8 @@ repositories {
 }
 
 dependencies {
+    compile project(":library")
 }
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
