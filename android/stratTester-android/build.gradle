@@ -32,7 +32,6 @@ dependencies {
 }
 
 kotlin {
-    android("android")
     sourceSets {
     }
 }
