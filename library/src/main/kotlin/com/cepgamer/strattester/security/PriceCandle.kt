@@ -39,6 +39,12 @@ data class PriceCandle(
         volume = volume.setScale(5, RoundingMode.HALF_UP)
     }
 
+    val sellPrice: BigDecimal
+        get() = close
+
+    val buyPrice: BigDecimal
+        get() = close
+
     companion object {
         fun toDaily(candles: List<PriceCandle>): List<PriceCandle> {
             val listOfLists = candles.stream().collect(Collectors.groupingBy { candle: PriceCandle ->

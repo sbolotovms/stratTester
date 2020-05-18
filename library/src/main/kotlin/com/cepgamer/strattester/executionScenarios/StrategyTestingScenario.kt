@@ -88,12 +88,14 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         dailyRunner.run()
         runner.run()
 
-        val maxPossible = data.fold(data.first().second.close to BigDecimal(0).setScale(5), { acc, pair ->
-            return@fold if (acc.first > pair.second.close) {
-                pair.second.close to acc.second + (acc.first - pair.second.close)
-            } else pair.second.close to acc.second
-        })
-        println(maxPossible)
+        val firstOpen = data.first().second.open
+        val lastClose = data.last().second.close
+        val priceDiffPercent = lastClose / firstOpen * BigDecimal(100)
+        println("""
+            Opened at: $firstOpen
+            Closed at: $lastClose
+            Gain/loss: $priceDiffPercent
+            """)
 
         val dailyRes =
             stratsReport(
