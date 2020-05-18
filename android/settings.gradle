@@ -1,5 +1,0 @@
-rootProject.name = 'android'
-
-include ':stratTester-android'
-
-project(":stratTester-android").projectDir = file("stratTester-android/src")
