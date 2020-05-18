@@ -51,7 +51,11 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
             YahooWebDownloader.getYahooHourlyData(symbol, it.value.first, it.value.second, it.key)
         }
 
-    fun runStrategyTests() {
+    fun runStrategyTests(
+        haveCustom: Boolean = true,
+        haveMetricCutoffs: Boolean = true,
+        havePLCutoffs: Boolean = true,
+        haveInverse: Boolean = true) {
         val rawData = yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
         val data = rawData.map {
             security as BaseSecurity to it
