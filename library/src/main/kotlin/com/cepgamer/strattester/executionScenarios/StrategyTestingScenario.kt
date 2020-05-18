@@ -40,8 +40,8 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
 ----------------------------------------------------------------
             Total strats: ${strats.size}
             Any successful strats: ${strats.find { it.moneyAvailable.quantity > successfulCriteria } != null}
-            Top 50 Successful strats: ${strats.filter { it.moneyAvailable.quantity > successfulCriteria }
-            .sortedBy { it.moneyAvailable.quantity }.takeLast(50)}
+            Top 20 Successful strats: ${strats.filter { it.moneyAvailable.quantity > successfulCriteria }
+            .sortedBy { it.moneyAvailable.quantity }.takeLast(20)}
 ----------------------------------------------------------------
         """
     }
@@ -55,7 +55,8 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         haveCustom: Boolean = true,
         haveMetricCutoffs: Boolean = true,
         havePLCutoffs: Boolean = true,
-        haveInverse: Boolean = true) {
+        haveInverse: Boolean = true
+    ) {
         val rawData = yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
         val data = rawData.map {
             security as BaseSecurity to it
@@ -103,15 +104,17 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
             successfulCriteria = moneyAvailable().quantity.max(moneyAvailable().quantity * (rawData.last().close / rawData.first().close))
         )
 
-        File("dailyRes.txt").apply {
-            createNewFile()
-            writeText(dailyRes)
+        val prefix = "${symbol}/${testingMonths.joinToString("_")}"
+        val writeFile = { it: File ->
+            it.apply {
+                parentFile.mkdirs()
+                createNewFile()
+                writeText(dailyRes)
+            }
         }
+        File("$prefix/dailyRes.txt").let(writeFile)
 
-        File("res.txt").apply {
-            createNewFile()
-            writeText(res)
-        }
+        File("$prefix/res.txt").let(writeFile)
 
         val weak = strats.filter { it.moneyAvailable.quantity <= BigDecimal(5_000) }
     }
