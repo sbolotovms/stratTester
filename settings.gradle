@@ -1,6 +1,6 @@
 rootProject.name = 'stratTester'
 
-include ':stratTester-android, :library'
+include ':stratTester-android, :stratTester-library'
 
-project(":stratTester-android").projectDir = file("stratTester-android")
-project(":library").projectDir = file("library")
+project(":stratTester-android").projectDir = file("android")
+project(":stratTester-library").projectDir = file("library")
