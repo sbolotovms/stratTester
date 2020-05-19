@@ -66,16 +66,16 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         }
 
         val dailyStrats = StrategyListGenerator(security).generate(
-            haveCustom = true,
-            haveMetricCutoffs = true,
-            havePLCutoffs = true,
-            haveInverse = true
+            haveCustom = haveCustom,
+            haveMetricCutoffs = haveMetricCutoffs,
+            havePLCutoffs = havePLCutoffs,
+            haveInverse = haveInverse
         )
         val strats = StrategyListGenerator(security).generate(
-            haveCustom = true,
-            haveMetricCutoffs = true,
-            havePLCutoffs = true,
-            haveInverse = true
+            haveCustom = haveCustom,
+            haveMetricCutoffs = haveMetricCutoffs,
+            havePLCutoffs = havePLCutoffs,
+            haveInverse = haveInverse
         )
 
         val dailyRunner = SavedDataStrategyRunner(
@@ -91,32 +91,39 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         val firstOpen = data.first().second.open
         val lastClose = data.last().second.close
         val priceDiffPercent = lastClose / firstOpen * BigDecimal(100)
-        println("""
+        println(
+            """
             Opened at: $firstOpen
             Closed at: $lastClose
             Gain/loss: $priceDiffPercent
-            """)
+            
+            Best hourly strat gain: ${strats.maxBy { it.moneyAvailable.quantity }?.moneyAvailable?.quantity}
+            Best daily strat gain: ${dailyStrats.maxBy { it.moneyAvailable.quantity }?.moneyAvailable?.quantity}
+            """
+        )
 
         val dailyRes =
             stratsReport(
-                dailyStrats.filter { it.transactions.isNotEmpty() }.sortedBy { it.moneyAvailable.quantity },
+                dailyStrats.filter { it.transactions.isNotEmpty() },
                 successfulCriteria = moneyAvailable().quantity.max(moneyAvailable().quantity * (rawData.last().close / rawData.first().close))
             )
-        val res = stratsReport(strats.filter { it.transactions.isNotEmpty() }.sortedBy { it.moneyAvailable.quantity },
+        val res = stratsReport(strats.filter { it.transactions.isNotEmpty() },
             successfulCriteria = moneyAvailable().quantity.max(moneyAvailable().quantity * (rawData.last().close / rawData.first().close))
         )
 
         val prefix = "${symbol}/${testingMonths.joinToString("_")}"
-        val writeFile = { it: File ->
-            it.apply {
-                parentFile.mkdirs()
-                createNewFile()
-                writeText(dailyRes)
+        val writeFile = { result: String ->
+            { it: File ->
+                it.apply {
+                    parentFile.mkdirs()
+                    createNewFile()
+                    writeText(result)
+                }
             }
         }
-        File("$prefix/dailyRes.txt").let(writeFile)
+        File("$prefix/dailyRes.txt").let(writeFile(dailyRes))
 
-        File("$prefix/res.txt").let(writeFile)
+        File("$prefix/res.txt").let(writeFile(res))
 
         val weak = strats.filter { it.moneyAvailable.quantity <= BigDecimal(5_000) }
     }
