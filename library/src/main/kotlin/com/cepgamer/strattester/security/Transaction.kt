@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 
-data class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val action: Action) {
+data class Transaction(val security: Stock, val quantity: BigDecimal, val action: Action) {
     enum class Action {
         BUY,
         SELL
@@ -16,7 +16,7 @@ data class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val
     companion object {
         @Throws(TransactionFailedException::class)
         fun purchase(
-            security: BaseSecurity,
+            security: Stock,
             priceCandle: PriceCandle,
             trader: BaseTrader,
             money: Dollar

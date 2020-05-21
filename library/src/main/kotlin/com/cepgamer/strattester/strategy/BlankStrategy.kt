@@ -1,11 +1,11 @@
 package com.cepgamer.strattester.strategy
 
-import com.cepgamer.strattester.security.BaseSecurity
+import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
 
 class BlankStrategy(
-    security: BaseSecurity,
+    security: Stock,
     money: Dollar
 ) : BaseStrategy(security) {
     override fun priceUpdate(

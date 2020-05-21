@@ -63,7 +63,8 @@ class YahooJSONParser(private val json: String?, filename: String? = null) : Bas
                     highs[i],
                     volumes[i],
                     timestamp[i].toLong() * 1000L,
-                    range
+                    range,
+
                 )
             )
         }

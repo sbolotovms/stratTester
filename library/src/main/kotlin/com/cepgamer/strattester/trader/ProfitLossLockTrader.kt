@@ -1,16 +1,15 @@
 package com.cepgamer.strattester.trader
 
 import com.cepgamer.strattester.metric.BaseMetric
-import com.cepgamer.strattester.security.BaseSecurity
+import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.strategy.BaseStrategy
-import com.cepgamer.strattester.strategy.MetricCutoffStrategy
 import java.math.BigDecimal
 
 class ProfitLossLockTrader(
     metric: BaseMetric,
-    security: BaseSecurity,
+    security: Stock,
     moneyAvailable: Dollar,
     val profitCutoffPercentage: BigDecimal = BigDecimal(5).setScale(5),
     val lossCutoffPercentage: BigDecimal = BigDecimal(5).setScale(5),
@@ -60,7 +59,7 @@ class ProfitLossLockTrader(
          */
         fun generateNbyMStrategies(
             metric: BaseMetric,
-            security: BaseSecurity,
+            security: Stock,
             moneyAvailable: Dollar,
             profitLockPercentages: List<Int>,
             lossLockPercentages: List<Int>,

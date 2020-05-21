@@ -4,10 +4,9 @@ import com.cepgamer.strattester.StrategyListGenerator
 import com.cepgamer.strattester.data.YahooWebDownloader
 import com.cepgamer.strattester.parser.YahooJSONParser
 import com.cepgamer.strattester.runner.SavedDataTraderRunner
-import com.cepgamer.strattester.security.BaseSecurity
+import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
-import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.trader.BaseTrader
 import com.cepgamer.strattester.trader.StrategyTrader
 import java.io.File
@@ -60,7 +59,7 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
     ) {
         val rawData = yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
         val data = rawData.map {
-            security as BaseSecurity to it
+            security as Stock to it
         }
         val dailyData = PriceCandle.toDaily(data.map { it.second }).map {
             security to it

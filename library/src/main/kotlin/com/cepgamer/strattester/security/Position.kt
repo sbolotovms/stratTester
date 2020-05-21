@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import java.util.*
 
 data class Position(
-    val security: BaseSecurity,
+    val security: Stock,
     val quantity: BigDecimal,
     val purchasePrice: BigDecimal,
     val purchaseDate: Date,

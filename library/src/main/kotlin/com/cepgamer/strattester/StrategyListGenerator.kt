@@ -1,13 +1,13 @@
 package com.cepgamer.strattester
 
 import com.cepgamer.strattester.metric.*
-import com.cepgamer.strattester.security.BaseSecurity
+import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.strategy.*
 import com.cepgamer.strattester.trader.ProfitLossLockTrader
 import java.math.BigDecimal
 
-class StrategyListGenerator(val security: BaseSecurity) {
+class StrategyListGenerator(val security: Stock) {
     fun moneyAvailable(): Dollar {
         return Dollar(10_000)
     }

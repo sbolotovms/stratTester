@@ -1,10 +1,9 @@
 package com.cepgamer.strattester.strategy
 
 import com.cepgamer.strattester.security.*
-import com.cepgamer.strattester.util.StratLogger
 
 abstract class BaseStrategy(
-    val security: BaseSecurity
+    val security: Stock
 ) {
     enum class Action {
         BUY,

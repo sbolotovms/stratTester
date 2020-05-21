@@ -10,8 +10,9 @@ class StrategyTrader(val strategy: BaseStrategy, money: Dollar) : BaseTrader(mon
         when (action)
         {
             BaseStrategy.Action.BUY ->
-                purchaseStock(priceCandle,,)
-            BaseStrategy.Action.SELL -> TODO()
+                purchaseStock(priceCandle, strategy.security, money)
+            BaseStrategy.Action.SELL ->
+                closePositions(priceCandle)
             BaseStrategy.Action.HOLD -> TODO()
         }
     }

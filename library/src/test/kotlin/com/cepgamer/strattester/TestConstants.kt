@@ -10,7 +10,8 @@ object TestConstants {
         2,
         5,
         100,
-        60
+        60,
+
     )
     val shrinkCandle = PriceCandle(
         2,
@@ -19,6 +20,7 @@ object TestConstants {
         2,
         5,
         100,
-        60
+        60,
+
     )
 }

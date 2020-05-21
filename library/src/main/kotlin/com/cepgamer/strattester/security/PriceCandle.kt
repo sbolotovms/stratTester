@@ -1,7 +1,6 @@
 package com.cepgamer.strattester.security
 
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.stream.Collectors
 
 data class PriceCandle(
@@ -11,7 +10,8 @@ data class PriceCandle(
     val high: Dollar,
     var volume: BigDecimal,
     val openTimestamp: Long,
-    val timespan: Int
+    val timespan: Int,
+    val stock: Stock
 ) {
     constructor(
         open: Int,
@@ -20,7 +20,8 @@ data class PriceCandle(
         high: Int,
         volume: Int,
         openTimestamp: Int,
-        timespan: Int
+        timespan: Int,
+        stock: Stock
     ) : this(
         Dollar(open),
         Dollar(close),
@@ -28,7 +29,8 @@ data class PriceCandle(
         Dollar(high),
         BigDecimal(volume),
         openTimestamp.toLong(),
-        timespan
+        timespan,
+        stock
     )
 
     val sellPrice: Dollar
@@ -51,7 +53,8 @@ data class PriceCandle(
                         acc.high.max(priceCandle.high),
                         acc.volume + priceCandle.volume,
                         acc.openTimestamp,
-                        acc.timespan + priceCandle.timespan
+                        acc.timespan + priceCandle.timespan,
+                        acc.stock
                     )
                 }
             }.sortedBy { it.openTimestamp }

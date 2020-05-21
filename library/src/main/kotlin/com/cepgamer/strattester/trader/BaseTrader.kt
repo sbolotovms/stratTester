@@ -30,7 +30,7 @@ abstract class BaseTrader(var money: Dollar) {
 
     fun purchaseStock(
         priceCandle: PriceCandle,
-        security: BaseSecurity,
+        security: Stock,
         moneyToUse: Dollar
     ): BaseStrategy.Action {
         try {

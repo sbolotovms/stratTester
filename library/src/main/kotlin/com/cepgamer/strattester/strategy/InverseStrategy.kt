@@ -1,11 +1,11 @@
 package com.cepgamer.strattester.strategy
 
-import com.cepgamer.strattester.security.BaseSecurity
+import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.PriceCandle
 
 class InverseStrategy(
     val strategy: BaseStrategy,
-    security: BaseSecurity
+    security: Stock
 ) : BaseStrategy(
     security
 ) {
