@@ -5,8 +5,7 @@ import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
 
 class InverseStrategy(val strategy: BaseStrategy, security: BaseSecurity, money: Dollar) : BaseStrategy(
-    security,
-    money
+    security
 ) {
     override fun priceUpdate(priceCandle: PriceCandle): Action {
         val action = strategy.priceUpdate(priceCandle)

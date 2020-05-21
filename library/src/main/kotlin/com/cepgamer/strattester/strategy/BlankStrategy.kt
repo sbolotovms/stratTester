@@ -7,7 +7,7 @@ import com.cepgamer.strattester.security.PriceCandle
 class BlankStrategy(
     security: BaseSecurity,
     money: Dollar
-) : BaseStrategy(security, money) {
+) : BaseStrategy(security) {
     override fun priceUpdate(
         priceCandle: PriceCandle
     ): Action {
