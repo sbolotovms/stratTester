@@ -40,8 +40,7 @@ data class Transaction(val security: Stock, val quantity: BigDecimal, val action
 
         fun sell(position: Position, priceCandle: PriceCandle, trader: BaseTrader): Pair<Transaction, Position> {
             val sellingPrice = priceCandle.sellPrice
-            val moneyAcquired = sellingPrice * position.quantity
-            trader.money += moneyAcquired
+            trader.money += sellingPrice * position.quantity
             position.apply {
                 sellPrice = sellingPrice
                 status = Position.Status.CLOSED

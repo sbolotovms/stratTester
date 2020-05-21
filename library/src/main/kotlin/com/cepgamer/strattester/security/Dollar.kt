@@ -38,11 +38,11 @@ class Dollar(quantity: String) : BigDecimal(quantity) {
         return Dollar(super.multiply(multiplicand))
     }
 
-    override fun add(augend: BigDecimal?): Dollar {
+    operator fun plus(augend: BigDecimal?): Dollar {
         return Dollar(super.add(augend))
     }
 
-    override fun subtract(subtrahend: BigDecimal?): Dollar {
+    operator fun minus(subtrahend: BigDecimal?): Dollar {
         return Dollar(super.subtract(subtrahend))
     }
 
