@@ -20,7 +20,7 @@ class MetricCutoffStrategyTest {
     fun `Test metric cutoff positive metric`() {
         val metric = ConstantMetric(BigDecimal.ONE, BigDecimal.ZERO)
         val money = money
-        val strategy = MetricCutoffStrategy(metric, security, money)
+        val strategy = MetricCutoffStrategy(metric, security)
 
         strategy.priceUpdate(TestConstants.growthCandle)
         Assert.assertEquals(
@@ -44,7 +44,7 @@ class MetricCutoffStrategyTest {
     fun `Test metric cutoff negative metric`() {
         val metric = ConstantMetric(BigDecimal(-1), BigDecimal.ONE)
         val money = money
-        val strategy = MetricCutoffStrategy(metric, security, money)
+        val strategy = MetricCutoffStrategy(metric, security)
 
         strategy.priceUpdate(TestConstants.growthCandle)
         Assert.assertEquals(

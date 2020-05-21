@@ -9,19 +9,18 @@ import java.math.BigDecimal
 open class MetricCutoffStrategy(
     metric: BaseMetric,
     security: BaseSecurity,
-    moneyAvailable: Dollar,
     val goodSignalCutoff: BigDecimal = BigDecimal.ZERO,
     val badSignalCutoff: BigDecimal = BigDecimal.ZERO
-) : MetricStrategy(metric, security, moneyAvailable) {
+) : MetricStrategy(metric, security) {
     override fun priceUpdate(
         priceCandle: PriceCandle
     ): Action {
         metric.newData(priceCandle)
 
         if (metric.goodSignal >= goodSignalCutoff) {
-            return purchaseStock(priceCandle)
+            return Action.BUY
         } else if (metric.badSignal >= badSignalCutoff) {
-            return closePositions(priceCandle)
+            return Action.SELL
         }
         return Action.HOLD
     }
@@ -50,7 +49,6 @@ open class MetricCutoffStrategy(
                         MetricCutoffStrategy(
                             metric,
                             security,
-                            moneyAvailable.copy(),
                             BigDecimal(i) / BigDecimal(n),
                             BigDecimal(j) / BigDecimal(n)
                         )

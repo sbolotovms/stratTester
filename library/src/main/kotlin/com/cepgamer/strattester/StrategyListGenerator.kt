@@ -54,7 +54,7 @@ class StrategyListGenerator(val security: BaseSecurity) {
     }
 
     private fun generateInverseStrategies(strats: List<() -> BaseStrategy>): List<() -> BaseStrategy> {
-        return strats.map { { InverseStrategy(it(), security, moneyAvailable()) } }
+        return strats.map { { InverseStrategy(it(), security) } }
     }
 
     private fun generateAllStrategies(
@@ -73,7 +73,7 @@ class StrategyListGenerator(val security: BaseSecurity) {
         return alllStrats.map { it() }
     }
 
-    val buyStrategy = BuyStrategy(security, moneyAvailable())
+    val buyStrategy = BuyStrategy(security)
 
     fun generate(
         haveCustom: Boolean = false,
@@ -83,20 +83,18 @@ class StrategyListGenerator(val security: BaseSecurity) {
     ): List<BaseStrategy> {
         val custom = listOf(
             BlankStrategy(security, moneyAvailable()),
-            MetricCutoffStrategy(SimpleGrowthMetric(), security, moneyAvailable(), BigDecimal(0)),
+            MetricCutoffStrategy(SimpleGrowthMetric(), security, BigDecimal(0)),
             MetricCutoffStrategy(
                 SwapSignalMetric(SimpleGrowthMetric()),
                 security,
-                moneyAvailable(),
                 BigDecimal(0)
             ),
             MetricCutoffStrategy(
                 InverseMetric(SimpleGrowthMetric()),
                 security,
-                moneyAvailable(),
                 BigDecimal(0)
             ),
-            BuyStrategy(security, moneyAvailable())
+            BuyStrategy(security)
         )
         val metricCutoffs =
             generateAllStrategies({ SimpleGrowthMetric() }, this::generateMetricStrategies, haveInverse) +
