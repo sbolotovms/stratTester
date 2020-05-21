@@ -29,19 +29,19 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
 
     val security = Stock(symbol)
 
-    fun moneyAvailable(): Dollar = Dollar(BigDecimal(10000))
+    fun moneyAvailable(): Dollar = Dollar(10000)
 
-    fun stratsReport(
-        strats: List<BaseStrategy>,
+    fun tradersReport(
+        traders: List<BaseStrategy>,
         reportAll: Boolean = false,
-        successfulCriteria: BigDecimal = moneyAvailable().quantity
+        successfulCriteria: BigDecimal = moneyAvailable()
     ): String {
-        return """${if (reportAll) strats.toString() else ""}
+        return """${if (reportAll) traders.toString() else ""}
 ----------------------------------------------------------------
-            Total strats: ${strats.size}
-            Any successful strats: ${strats.find { it.moneyAvailable.quantity > successfulCriteria } != null}
-            Top 20 Successful strats: ${strats.filter { it.moneyAvailable.quantity > successfulCriteria }
-            .sortedBy { it.moneyAvailable.quantity }.takeLast(20)}
+            Total Traders: ${traders.size}
+            Any successful traders: ${traders.find { it.money > successfulCriteria } != null}
+            Top 20 Successful traders: ${traders.filter { it.money > successfulCriteria }
+            .sortedBy { it.money }.takeLast(20)}
 ----------------------------------------------------------------
         """
     }
@@ -103,11 +103,11 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         )
 
         val dailyRes =
-            stratsReport(
+            tradersReport(
                 dailyStrats.filter { it.transactions.isNotEmpty() },
                 successfulCriteria = moneyAvailable().quantity.max(moneyAvailable().quantity * (rawData.last().close / rawData.first().close))
             )
-        val res = stratsReport(strats.filter { it.transactions.isNotEmpty() },
+        val res = tradersReport(strats.filter { it.transactions.isNotEmpty() },
             successfulCriteria = moneyAvailable().quantity.max(moneyAvailable().quantity * (rawData.last().close / rawData.first().close))
         )
 

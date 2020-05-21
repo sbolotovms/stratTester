@@ -5,10 +5,10 @@ import java.math.RoundingMode
 import java.util.stream.Collectors
 
 data class PriceCandle(
-    var open: BigDecimal,
-    var close: BigDecimal,
-    var low: BigDecimal,
-    var high: BigDecimal,
+    val open: Dollar,
+    val close: Dollar,
+    val low: Dollar,
+    val high: Dollar,
     var volume: BigDecimal,
     val openTimestamp: Long,
     val timespan: Int
@@ -22,22 +22,14 @@ data class PriceCandle(
         openTimestamp: Int,
         timespan: Int
     ) : this(
-        BigDecimal(open),
-        BigDecimal(close),
-        BigDecimal(low),
-        BigDecimal(high),
+        Dollar(open),
+        Dollar(close),
+        Dollar(low),
+        Dollar(high),
         BigDecimal(volume),
         openTimestamp.toLong(),
         timespan
     )
-
-    init {
-        open = open.setScale(5, RoundingMode.HALF_UP)
-        close = close.setScale(5, RoundingMode.HALF_UP)
-        low = low.setScale(5, RoundingMode.HALF_UP)
-        high = high.setScale(5, RoundingMode.HALF_UP)
-        volume = volume.setScale(5, RoundingMode.HALF_UP)
-    }
 
     val sellPrice: BigDecimal
         get() = close
@@ -52,7 +44,7 @@ data class PriceCandle(
             }).toList()
             val list = listOfLists.map {
                 it.second.reduce { acc, priceCandle ->
-                    PriceCandle(
+                    return@reduce PriceCandle(
                         acc.open,
                         priceCandle.open,
                         acc.low.min(priceCandle.low),

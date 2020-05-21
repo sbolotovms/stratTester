@@ -16,13 +16,13 @@ data class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val
         @Throws(TransactionFailedException::class)
         fun purchase(security: BaseSecurity, priceCandle: PriceCandle, money: Dollar): Pair<Transaction, Position> {
             val buyPrice = priceCandle.buyPrice
-            if (buyPrice >= money.quantity) {
+            if (buyPrice >= money) {
                 throw TransactionFailedException("Not enough money")
             }
 
-            val quantity = money.quantity.divide(buyPrice, RoundingMode.FLOOR).setScale(0, RoundingMode.FLOOR).setScale(5)
-            money.quantity -= buyPrice * quantity
-            money.quantity = money.quantity.setScale(5)
+            val quantity = money.divide(buyPrice, RoundingMode.FLOOR).setScale(0, RoundingMode.FLOOR).setScale(5)
+            money -= buyPrice * quantity
+            money = money
 
             return Transaction(security, quantity, Action.BUY) to Position(
                 security,
@@ -36,7 +36,7 @@ data class Transaction(val security: BaseSecurity, val quantity: BigDecimal, val
         fun sell(position: Position, priceCandle: PriceCandle, money: Dollar): Pair<Transaction, Position> {
             val sellingPrice = priceCandle.sellPrice
             val moneyAcquired = sellingPrice * position.quantity
-            money.quantity += moneyAcquired
+            money += moneyAcquired
             position.apply {
                 sellPrice = sellingPrice
                 status = Position.Status.CLOSED
