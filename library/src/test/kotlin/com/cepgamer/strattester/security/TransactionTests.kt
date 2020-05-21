@@ -4,7 +4,6 @@ import com.cepgamer.strattester.TestConstants
 import org.junit.Assert
 import org.junit.Test
 import java.math.BigDecimal
-import java.nio.channels.ClosedSelectorException
 import java.util.*
 
 class TransactionTests {
@@ -16,7 +15,7 @@ class TransactionTests {
     @Test
     fun `Test transaction purchase`() {
         val money = money
-        val (transaction, position) = Transaction.purchase(security, TestConstants.growthCandle, money)
+        val (transaction, position) = Transaction.purchase(security, TestConstants.growthCandle, money,)
 
         Assert.assertEquals(BigDecimal.ZERO.setScale(5), money.quantity)
         Assert.assertEquals(Transaction(security, BigDecimal(5_000).setScale(5), Transaction.Action.BUY), transaction)

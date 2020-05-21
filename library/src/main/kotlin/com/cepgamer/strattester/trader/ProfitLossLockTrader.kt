@@ -1,12 +1,14 @@
-package com.cepgamer.strattester.strategy
+package com.cepgamer.strattester.trader
 
 import com.cepgamer.strattester.metric.BaseMetric
 import com.cepgamer.strattester.security.BaseSecurity
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
+import com.cepgamer.strattester.strategy.BaseStrategy
+import com.cepgamer.strattester.strategy.MetricCutoffStrategy
 import java.math.BigDecimal
 
-class ProfitLossLockStrategy(
+class ProfitLossLockTrader(
     metric: BaseMetric,
     security: BaseSecurity,
     moneyAvailable: Dollar,
@@ -15,10 +17,10 @@ class ProfitLossLockStrategy(
     var sinceLastSaleCurrent: Int = 0,
     goodSignalCutoff: BigDecimal = BigDecimal.ZERO,
     badSignalCutoff: BigDecimal = BigDecimal.ZERO
-) : MetricCutoffStrategy(metric, security, moneyAvailable, goodSignalCutoff, badSignalCutoff) {
+) : StrategyTrader(metric, security, moneyAvailable, goodSignalCutoff, badSignalCutoff) {
     var sinceLastSaleWait: Int = 5
 
-    override fun priceUpdate(priceCandle: PriceCandle): Action {
+    override fun priceUpdate(priceCandle: PriceCandle) {
         val sellingPrice = priceCandle.low
         var didSell = false
         for (position in ArrayList(openPositions)) {
@@ -73,7 +75,7 @@ class ProfitLossLockStrategy(
                             (0..n).map { i ->
                                 (0..m).map { j ->
                                     {
-                                        ProfitLossLockStrategy(
+                                        ProfitLossLockTrader(
                                             metric,
                                             security,
                                             moneyAvailable.copy(),
@@ -86,17 +88,17 @@ class ProfitLossLockStrategy(
                                     }
                                 }
                             }
-                                .reduce { list1: List<() -> ProfitLossLockStrategy>, list2: List<() -> ProfitLossLockStrategy> ->
+                                .reduce { list1: List<() -> ProfitLossLockTrader>, list2: List<() -> ProfitLossLockTrader> ->
                                     list1 + list2
                                 }
                         }
-                            .reduce { list1: List<() -> ProfitLossLockStrategy>, list2: List<() -> ProfitLossLockStrategy> ->
+                            .reduce { list1: List<() -> ProfitLossLockTrader>, list2: List<() -> ProfitLossLockTrader> ->
                                 list1 + list2
                             }
-                    }.reduce { list1: List<() -> ProfitLossLockStrategy>, list2: List<() -> ProfitLossLockStrategy> ->
+                    }.reduce { list1: List<() -> ProfitLossLockTrader>, list2: List<() -> ProfitLossLockTrader> ->
                         list1 + list2
                     }
-                }.reduce { list1: List<() -> ProfitLossLockStrategy>, list2: List<() -> ProfitLossLockStrategy> ->
+                }.reduce { list1: List<() -> ProfitLossLockTrader>, list2: List<() -> ProfitLossLockTrader> ->
                     list1 + list2
                 }
 

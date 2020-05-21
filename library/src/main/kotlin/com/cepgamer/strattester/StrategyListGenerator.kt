@@ -4,6 +4,7 @@ import com.cepgamer.strattester.metric.*
 import com.cepgamer.strattester.security.BaseSecurity
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.strategy.*
+import com.cepgamer.strattester.trader.ProfitLossLockTrader
 import java.math.BigDecimal
 
 class StrategyListGenerator(val security: BaseSecurity) {
@@ -25,7 +26,7 @@ class StrategyListGenerator(val security: BaseSecurity) {
 
     private fun generatePLCutoffStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
         val list =
-            ProfitLossLockStrategy.generateNbyMStrategies(
+            ProfitLossLockTrader.generateNbyMStrategies(
                 metric(),
                 security,
                 moneyAvailable(),

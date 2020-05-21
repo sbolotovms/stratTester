@@ -3,12 +3,13 @@ package com.cepgamer.strattester.executionScenarios
 import com.cepgamer.strattester.StrategyListGenerator
 import com.cepgamer.strattester.data.YahooWebDownloader
 import com.cepgamer.strattester.parser.YahooJSONParser
-import com.cepgamer.strattester.runner.SavedDataStrategyRunner
+import com.cepgamer.strattester.runner.SavedDataTraderRunner
 import com.cepgamer.strattester.security.BaseSecurity
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.security.Stock
-import com.cepgamer.strattester.strategy.BaseStrategy
+import com.cepgamer.strattester.trader.BaseTrader
+import com.cepgamer.strattester.trader.StrategyTrader
 import java.io.File
 import java.math.BigDecimal
 
@@ -32,7 +33,7 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
     fun moneyAvailable(): Dollar = Dollar(10000)
 
     fun tradersReport(
-        traders: List<BaseStrategy>,
+        traders: List<BaseTrader>,
         reportAll: Boolean = false,
         successfulCriteria: BigDecimal = moneyAvailable()
     ): String {
@@ -78,10 +79,13 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
             haveInverse = haveInverse
         )
 
-        val dailyRunner = SavedDataStrategyRunner(
+        val tradersByDay = dailyStrats.map { StrategyTrader(it, moneyAvailable()) }
+        val tradersByHour = strats.map { StrategyTrader(it, moneyAvailable()) }
+
+        val dailyRunner = SavedDataTraderRunner(
             dailyStrats, listOf(dailyData)
         )
-        val runner = SavedDataStrategyRunner(
+        val runner = SavedDataTraderRunner(
             strats, listOf(data)
         )
 
@@ -97,18 +101,18 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
             Closed at: $lastClose
             Gain/loss: $priceDiffPercent
             
-            Best hourly strat gain: ${strats.maxBy { it.moneyAvailable.quantity }?.moneyAvailable?.quantity}
-            Best daily strat gain: ${dailyStrats.maxBy { it.moneyAvailable.quantity }?.moneyAvailable?.quantity}
+            Best hourly strat gain: ${strats.maxBy { it.money }?.money}
+            Best daily strat gain: ${dailyStrats.maxBy { it.money }?.money}
             """
         )
 
         val dailyRes =
             tradersReport(
                 dailyStrats.filter { it.transactions.isNotEmpty() },
-                successfulCriteria = moneyAvailable().quantity.max(moneyAvailable().quantity * (rawData.last().close / rawData.first().close))
+                successfulCriteria = moneyAvailable().max(moneyAvailable() * (rawData.last().close / rawData.first().close))
             )
         val res = tradersReport(strats.filter { it.transactions.isNotEmpty() },
-            successfulCriteria = moneyAvailable().quantity.max(moneyAvailable().quantity * (rawData.last().close / rawData.first().close))
+            successfulCriteria = moneyAvailable().max(moneyAvailable() * (rawData.last().close / rawData.first().close))
         )
 
         val prefix = "${symbol}/${testingMonths.joinToString("_")}"
@@ -125,6 +129,6 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
 
         File("$prefix/res.txt").let(writeFile(res))
 
-        val weak = strats.filter { it.moneyAvailable.quantity <= BigDecimal(5_000) }
+        val weak = strats.filter { it.money <= BigDecimal(5_000) }
     }
 }
