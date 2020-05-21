@@ -33,6 +33,26 @@ data class PriceCandle(
         stock
     )
 
+    constructor(
+        open: String,
+        close: String,
+        low: String,
+        high: String,
+        volume: Int,
+        openTimestamp: Long,
+        timespan: Int,
+        stock: Stock
+    ) : this(
+        Dollar(open),
+        Dollar(close),
+        Dollar(low),
+        Dollar(high),
+        BigDecimal(volume),
+        openTimestamp,
+        timespan,
+        stock
+    )
+
     val sellPrice: Dollar
         get() = close
 

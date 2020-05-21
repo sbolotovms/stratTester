@@ -2,9 +2,11 @@ package com.cepgamer.strattester.parser
 
 import com.cepgamer.strattester.data.FileLoader
 import com.cepgamer.strattester.security.PriceCandle
+import com.cepgamer.strattester.security.Stock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.content
 import java.math.BigDecimal
 import java.util.stream.IntStream
 import kotlin.streams.toList
@@ -16,33 +18,36 @@ class YahooJSONParser(private val json: String?, filename: String? = null) : Bas
         val json = Json.parseJson(json ?: jsonFile?.load() ?: throw IllegalArgumentException())
 
         val result = json.jsonObject.getObject("chart").getArray("result")[0].jsonObject
+        val stock = Stock(result.getObject("meta").getPrimitive("symbol").content)
         val timestamps = result.getArray("timestamp").stream().mapToInt {
             it.primitive.int
         }
 
         val candles = result.getObject("indicators").getArray("quote")[0].jsonObject
 
-        return parseJsonCandles(timestamps, candles)
+        return parseJsonCandles(timestamps, candles,)
     }
 
-    private fun parseJsonCandles(timestamps: IntStream, candles: JsonObject): List<PriceCandle> {
+    private fun parseJsonCandles(
+        timestamps: IntStream,
+        candles: JsonObject,
+        stock: Stock
+    ): List<PriceCandle> {
         val timestamp = timestamps.toList()
-        val bigDecimalConverter = { it: JsonElement ->
-            if (it.primitive.content != "null") {
-                BigDecimal(it.primitive.content)
-            }
-            else {
-                BigDecimal.ZERO
-            }
+        val intConverter = { it: JsonElement ->
+            it.primitive.int
         }
-        val zeroFilter = {it: BigDecimal ->
-            it != BigDecimal.ZERO
+        val stringConverter = { it: JsonElement ->
+            it.content
         }
-        val lows = candles.getArray("low").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
-        val volumes = candles.getArray("volume").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
-        val opens = candles.getArray("open").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
-        val highs = candles.getArray("high").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
-        val closes = candles.getArray("close").stream().map(bigDecimalConverter).filter(zeroFilter).toList()
+        val nullFilter = { it: JsonElement ->
+            it.content != "null"
+        }
+        val lows = candles.getArray("low").stream().filter(nullFilter).map(stringConverter).toList()
+        val opens = candles.getArray("open").stream().filter(nullFilter).map(stringConverter).toList()
+        val highs = candles.getArray("high").stream().filter(nullFilter).map(stringConverter).toList()
+        val closes = candles.getArray("close").stream().filter(nullFilter).map(stringConverter).toList()
+        val volumes = candles.getArray("volume").stream().filter(nullFilter).map(intConverter).toList()
 
         assert(
             timestamp.size == lows.size
@@ -64,7 +69,7 @@ class YahooJSONParser(private val json: String?, filename: String? = null) : Bas
                     volumes[i],
                     timestamp[i].toLong() * 1000L,
                     range,
-
+                    stock
                 )
             )
         }
