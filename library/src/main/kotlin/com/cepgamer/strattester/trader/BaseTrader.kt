@@ -1,18 +1,17 @@
 package com.cepgamer.strattester.trader
 
-import com.cepgamer.strattester.security.Dollar
-import com.cepgamer.strattester.security.Position
-import com.cepgamer.strattester.security.PriceCandle
-import com.cepgamer.strattester.security.Transaction
+import com.cepgamer.strattester.security.*
 import com.cepgamer.strattester.strategy.BaseStrategy
 import com.cepgamer.strattester.util.StratLogger
 
-abstract class BaseTrader(val money: Dollar) {
+abstract class BaseTrader(var money: Dollar) {
 
     val transactions: MutableList<Transaction> = mutableListOf()
     val positions: MutableList<Position> = mutableListOf()
 
     val openPositions: MutableList<Position> = mutableListOf()
+
+    abstract fun priceUpdate(priceCandle: PriceCandle)
 
     fun updateData(pair: Pair<Transaction, Position>) {
         transactions.add(pair.first)
@@ -29,9 +28,15 @@ abstract class BaseTrader(val money: Dollar) {
         updateData(transaction to position)
     }
 
-    fun purchaseStock(priceCandle: PriceCandle): BaseStrategy.Action {
+    fun purchaseStock(
+        priceCandle: PriceCandle,
+        security: BaseSecurity,
+        moneyToUse: Dollar
+    ): BaseStrategy.Action {
         try {
-            val transaction = Transaction.purchase(security, priceCandle, money)
+            if (money < moneyToUse)
+                throw TradingException("Insufficient funds")
+            val transaction = Transaction.purchase(security, priceCandle, this, moneyToUse)
             updateData(transaction)
             return BaseStrategy.Action.BUY
         } catch (e: Transaction.TransactionFailedException) {
@@ -51,7 +56,7 @@ abstract class BaseTrader(val money: Dollar) {
     }
 
     fun closePosition(priceCandle: PriceCandle, position: Position) {
-        val transaction = Transaction.sell(position, priceCandle, money)
+        val transaction = Transaction.sell(position, priceCandle, this)
         updateData(transaction)
     }
 

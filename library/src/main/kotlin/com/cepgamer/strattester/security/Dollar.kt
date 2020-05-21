@@ -33,4 +33,20 @@ class Dollar(quantity: String) : BigDecimal(quantity) {
     override fun max(other: BigDecimal?): Dollar {
         return Dollar(super.max(other))
     }
+
+    override fun multiply(multiplicand: BigDecimal?): Dollar {
+        return Dollar(super.multiply(multiplicand))
+    }
+
+    override fun add(augend: BigDecimal?): Dollar {
+        return Dollar(super.add(augend))
+    }
+
+    override fun subtract(subtrahend: BigDecimal?): Dollar {
+        return Dollar(super.subtract(subtrahend))
+    }
+
+    operator fun times(other: BigDecimal): Dollar {
+        return multiply(other)
+    }
 }

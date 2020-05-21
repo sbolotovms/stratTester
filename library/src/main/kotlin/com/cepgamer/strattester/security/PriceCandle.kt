@@ -31,10 +31,10 @@ data class PriceCandle(
         timespan
     )
 
-    val sellPrice: BigDecimal
+    val sellPrice: Dollar
         get() = close
 
-    val buyPrice: BigDecimal
+    val buyPrice: Dollar
         get() = close
 
     companion object {
