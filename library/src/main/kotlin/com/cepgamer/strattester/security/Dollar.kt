@@ -2,30 +2,22 @@ package com.cepgamer.strattester.security
 
 import java.math.BigDecimal
 
-data class Dollar(var quantity: BigDecimal) {
-    constructor(quantity: Int) : this(BigDecimal(quantity))
+class Dollar(quantity: String) : BigDecimal(quantity) {
+    constructor(quantity: Int) : this(quantity.toString())
 
     override fun toString(): String {
-        return "Dollar: $quantity"
+        return "Dollar: ${super.toString()}"
     }
 
-    infix operator fun plus(other: Dollar): Dollar {
-        return Dollar(quantity + other.quantity)
+    override fun toByte(): Byte {
+        return toInt().toByte()
     }
 
-    infix operator fun minus(other: Dollar): Dollar {
-        return Dollar(quantity - other.quantity)
+    override fun toChar(): Char {
+        return toInt().toChar()
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other is Dollar) {
-            return other.quantity == quantity
-        }
-
-        return false
-    }
-
-    override fun hashCode(): Int {
-        return quantity.hashCode()
+    override fun toShort(): Short {
+        return toInt().toShort()
     }
 }
