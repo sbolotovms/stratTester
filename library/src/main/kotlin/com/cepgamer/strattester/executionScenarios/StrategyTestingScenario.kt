@@ -82,10 +82,10 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         val tradersByHour = strats.map { StrategyTrader(it, moneyAvailable()) }
 
         val dailyRunner = SavedDataTraderRunner(
-            dailyStrats, listOf(dailyData)
+            tradersByDay, listOf(dailyData)
         )
         val runner = SavedDataTraderRunner(
-            strats, listOf(data)
+            tradersByHour, listOf(data)
         )
 
         dailyRunner.run()
@@ -100,17 +100,17 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
             Closed at: $lastClose
             Gain/loss: $priceDiffPercent
             
-            Best hourly strat gain: ${strats.maxBy { it.money }?.money}
-            Best daily strat gain: ${dailyStrats.maxBy { it.money }?.money}
+            Best hourly strat gain: ${tradersByHour.maxBy { it.money }?.money}
+            Best daily strat gain: ${tradersByDay.maxBy { it.money }?.money}
             """
         )
 
         val dailyRes =
             tradersReport(
-                dailyStrats.filter { it.transactions.isNotEmpty() },
+                tradersByDay.filter { it.transactions.isNotEmpty() },
                 successfulCriteria = moneyAvailable().max(moneyAvailable() * (rawData.last().close / rawData.first().close))
             )
-        val res = tradersReport(strats.filter { it.transactions.isNotEmpty() },
+        val res = tradersReport(tradersByHour.filter { it.transactions.isNotEmpty() },
             successfulCriteria = moneyAvailable().max(moneyAvailable() * (rawData.last().close / rawData.first().close))
         )
 
@@ -127,7 +127,5 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         File("$prefix/dailyRes.txt").let(writeFile(dailyRes))
 
         File("$prefix/res.txt").let(writeFile(res))
-
-        val weak = strats.filter { it.money <= BigDecimal(5_000) }
     }
 }
