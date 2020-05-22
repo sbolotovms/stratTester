@@ -60,7 +60,7 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
     ) {
         val rawData = yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
         val data = rawData.map {
-            security as Stock to it
+            security to it
         }
         val dailyData = PriceCandle.toDaily(data.map { it.second }).map {
             security to it
@@ -93,9 +93,12 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         val priceDiffPercent = lastClose / firstOpen * BigDecimal(100)
         println(
             """
+            Trader count: ${tradersByHour.size}
+            Total timestamp count: ${data.size}
+
             Opened at: $firstOpen
             Closed at: $lastClose
-            Gain/loss: $priceDiffPercent
+            Gain/loss: $priceDiffPercent %
             
             Best hourly strat gain: ${tradersByHour.maxBy { it.money }?.money}
             Best daily strat gain: ${tradersByDay.maxBy { it.money }?.money}

@@ -1,13 +1,14 @@
 package com.cepgamer.strattester.security
 
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 class Dollar(quantity: String) : BigDecimal(quantity) {
     constructor(quantity: Int) : this(quantity.toString())
-    constructor(quantity: BigDecimal) : this(quantity.toString())
+    constructor(quantity: BigDecimal) : this(quantity.toPlainString())
 
     init {
-        setScale(5)
+        setScale(5, RoundingMode.HALF_UP)
     }
 
     override fun toString(): String {

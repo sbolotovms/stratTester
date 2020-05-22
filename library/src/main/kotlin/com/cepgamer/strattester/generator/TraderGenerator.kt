@@ -32,7 +32,7 @@ class TraderGenerator(
                 moneyAvailable(),
                 listOf(1, 2, 3, 4, 5),
                 listOf(1, 2, 3, 4, 5),
-                listOf(5, 10, 25)
+                listOf(5, 10, 25, 100, 200)
             )
         }.fold(emptyList()) { acc: List<() -> BaseTrader>, it: List<() -> BaseTrader> ->
             return@fold acc + it
