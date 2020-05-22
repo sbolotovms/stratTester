@@ -9,7 +9,7 @@ import org.junit.Test
 class BlankStrategyTest {
     val money = Dollar(1_000)
     val security = Stock("ALK")
-    val blankStrategy = BlankStrategy(security, money)
+    val blankStrategy = BlankStrategy(security)
 
     @Test
     fun `Test money didn't change`()

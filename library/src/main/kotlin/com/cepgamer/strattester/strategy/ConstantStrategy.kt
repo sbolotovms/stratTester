@@ -3,8 +3,11 @@ package com.cepgamer.strattester.strategy
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.PriceCandle
 
-class BuyStrategy(security: Stock) : BaseStrategy(security) {
+class ConstantStrategy(
+    security: Stock,
+    val action: Action
+) : BaseStrategy(security) {
     override fun priceUpdate(priceCandle: PriceCandle): Action {
-        return Action.BUY
+        return action
     }
 }

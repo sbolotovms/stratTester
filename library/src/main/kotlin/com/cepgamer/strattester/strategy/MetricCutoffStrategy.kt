@@ -2,7 +2,6 @@ package com.cepgamer.strattester.strategy
 
 import com.cepgamer.strattester.metric.BaseMetric
 import com.cepgamer.strattester.security.Stock
-import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
 import java.math.BigDecimal
 
@@ -39,7 +38,6 @@ open class MetricCutoffStrategy(
         fun generateNbyMStrategies(
             metric: BaseMetric,
             security: Stock,
-            moneyAvailable: Dollar,
             n: Int,
             m: Int
         ): List<() -> BaseStrategy> {
