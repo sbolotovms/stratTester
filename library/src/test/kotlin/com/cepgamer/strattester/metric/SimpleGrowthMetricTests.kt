@@ -14,16 +14,16 @@ class SimpleGrowthMetricTests {
     fun `Test growth result value`() {
         simpleGrowthMetric = SimpleGrowthMetric().apply { newData(growthCandle) }
 
-        Assert.assertEquals(BigDecimal(1), simpleGrowthMetric.goodSignal)
-        Assert.assertEquals(BigDecimal(-1), simpleGrowthMetric.badSignal)
+        Assert.assertTrue(BigDecimal(1).compareTo(simpleGrowthMetric.goodSignal) == 0)
+        Assert.assertTrue(BigDecimal(-1).compareTo(simpleGrowthMetric.badSignal) == 0)
     }
 
     @Test
     fun `Test shrink result value`() {
         simpleGrowthMetric = SimpleGrowthMetric().apply { newData(shrinkCandle) }
 
-        Assert.assertEquals(BigDecimal(-1), simpleGrowthMetric.goodSignal)
-        Assert.assertEquals(BigDecimal(1), simpleGrowthMetric.badSignal)
+        Assert.assertTrue(BigDecimal(-1).compareTo(simpleGrowthMetric.goodSignal) == 0)
+        Assert.assertTrue(BigDecimal(1).compareTo(simpleGrowthMetric.badSignal) == 0)
     }
 
     @Test
@@ -31,8 +31,8 @@ class SimpleGrowthMetricTests {
         val halfCandle = growthCandle.copy(close = Dollar(BigDecimal(1.5)))
         simpleGrowthMetric = SimpleGrowthMetric().apply { newData(halfCandle) }
 
-        Assert.assertEquals(BigDecimal(0.5), simpleGrowthMetric.goodSignal)
-        Assert.assertEquals(BigDecimal(-0.5), simpleGrowthMetric.badSignal)
+        Assert.assertTrue(BigDecimal(0.5).compareTo(simpleGrowthMetric.goodSignal) == 0)
+        Assert.assertTrue(BigDecimal(-0.5).compareTo(simpleGrowthMetric.badSignal) == 0)
     }
 
     @Test
@@ -40,7 +40,7 @@ class SimpleGrowthMetricTests {
         val halfCandle = growthCandle.copy(close = Dollar(BigDecimal("1.1234")))
         simpleGrowthMetric = SimpleGrowthMetric().apply { newData(halfCandle) }
 
-        Assert.assertEquals(BigDecimal("0.1234"), simpleGrowthMetric.goodSignal)
-        Assert.assertEquals(BigDecimal("-0.1234"), simpleGrowthMetric.badSignal)
+        Assert.assertTrue(BigDecimal("0.1234").compareTo(simpleGrowthMetric.goodSignal) == 0)
+        Assert.assertTrue(BigDecimal("-0.1234").compareTo(simpleGrowthMetric.badSignal) == 0)
     }
 }

@@ -11,6 +11,13 @@ class Dollar(quantity: String) : BigDecimal(quantity) {
         setScale(5, RoundingMode.HALF_UP)
     }
 
+    override fun equals(other: Any?): Boolean {
+        return when (other) {
+            is BigDecimal -> compareTo(other) == 0
+            else -> super.equals(other)
+        }
+    }
+
     override fun toString(): String {
         return "Dollar: ${super.toString()}"
     }
@@ -49,5 +56,9 @@ class Dollar(quantity: String) : BigDecimal(quantity) {
 
     operator fun times(other: BigDecimal): Dollar {
         return multiply(other)
+    }
+
+    operator fun div(other: BigDecimal): Dollar {
+        return Dollar(divide(other, 5, RoundingMode.HALF_UP))
     }
 }

@@ -15,7 +15,7 @@ abstract class BaseMetric {
 
     val goodSignal: BigDecimal
         get() {
-            val signal = goodSignalInternal
+            val signal = BigDecimal(goodSignalInternal.toPlainString())
             if (signal > BigDecimal(1) || signal < BigDecimal(-1)) {
                 throw IllegalStateException("Good signal is not normalised")
             }
@@ -31,7 +31,7 @@ abstract class BaseMetric {
 
     val badSignal: BigDecimal
         get() {
-            val signal = badSignalInternal
+            val signal = BigDecimal(badSignalInternal.toPlainString())
             if (signal > BigDecimal(1) || signal < BigDecimal(-1)) {
                 throw IllegalStateException("Bad signal is not normalised")
             }

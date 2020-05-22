@@ -16,13 +16,13 @@ class ProfitLossLockTrader(
 
     var sinceLastSaleCurrent: Int = 0
     override fun priceUpdate(priceCandle: PriceCandle) {
-        val sellingPrice = priceCandle.low
+        val sellingPrice = priceCandle.sellPrice
         sinceLastSaleCurrent = max(0, sinceLastSaleCurrent - 1)
         if (sinceLastSaleCurrent > 0)
             return
         for (position in ArrayList(openPositions)) {
             val isProfit = position.purchasePrice < sellingPrice
-            val difference = ((position.purchasePrice / sellingPrice) - BigDecimal(1).setScale(5)).abs()
+            val difference = ((position.purchasePrice / sellingPrice) - BigDecimal(1).setScale(5)).abs() * BigDecimal(100)
             if (isProfit && difference >= profitCutoffPercentage) {
                 closePosition(priceCandle, position)
                 sinceLastSaleCurrent = sinceLastSaleWait
@@ -31,6 +31,9 @@ class ProfitLossLockTrader(
                 sinceLastSaleCurrent = sinceLastSaleWait
             }
         }
+
+        if (sinceLastSaleCurrent == 0)
+            super.priceUpdate(priceCandle)
     }
 
     override fun toString(): String {
