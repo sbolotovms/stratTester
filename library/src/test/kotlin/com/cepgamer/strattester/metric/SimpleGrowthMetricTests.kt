@@ -14,16 +14,16 @@ class SimpleGrowthMetricTests {
     fun `Test growth result value`() {
         simpleGrowthMetric = SimpleGrowthMetric().apply { newData(growthCandle) }
 
-        Assert.assertEquals(BigDecimal(1).setScale(5), simpleGrowthMetric.goodSignal)
-        Assert.assertEquals(BigDecimal(-1).setScale(5), simpleGrowthMetric.badSignal)
+        Assert.assertEquals(BigDecimal(1), simpleGrowthMetric.goodSignal)
+        Assert.assertEquals(BigDecimal(-1), simpleGrowthMetric.badSignal)
     }
 
     @Test
     fun `Test shrink result value`() {
         simpleGrowthMetric = SimpleGrowthMetric().apply { newData(shrinkCandle) }
 
-        Assert.assertEquals(BigDecimal(-1).setScale(5), simpleGrowthMetric.goodSignal)
-        Assert.assertEquals(BigDecimal(1).setScale(5), simpleGrowthMetric.badSignal)
+        Assert.assertEquals(BigDecimal(-1), simpleGrowthMetric.goodSignal)
+        Assert.assertEquals(BigDecimal(1), simpleGrowthMetric.badSignal)
     }
 
     @Test
@@ -31,7 +31,16 @@ class SimpleGrowthMetricTests {
         val halfCandle = growthCandle.copy(close = Dollar(BigDecimal(1.5)))
         simpleGrowthMetric = SimpleGrowthMetric().apply { newData(halfCandle) }
 
-        Assert.assertEquals(BigDecimal(0.5).setScale(5), simpleGrowthMetric.goodSignal)
-        Assert.assertEquals(BigDecimal(-0.5).setScale(5), simpleGrowthMetric.badSignal)
+        Assert.assertEquals(BigDecimal(0.5), simpleGrowthMetric.goodSignal)
+        Assert.assertEquals(BigDecimal(-0.5), simpleGrowthMetric.badSignal)
+    }
+
+    @Test
+    fun `Test 5th precision point`() {
+        val halfCandle = growthCandle.copy(close = Dollar(BigDecimal("1.1234")))
+        simpleGrowthMetric = SimpleGrowthMetric().apply { newData(halfCandle) }
+
+        Assert.assertEquals(BigDecimal("0.1234"), simpleGrowthMetric.goodSignal)
+        Assert.assertEquals(BigDecimal("-0.1234"), simpleGrowthMetric.badSignal)
     }
 }

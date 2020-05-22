@@ -24,7 +24,7 @@ class TransactionTests {
             Position(
                 security,
                 BigDecimal(5_000).setScale(5),
-                BigDecimal(2).setScale(5),
+                Dollar(BigDecimal(2)),
                 position.purchaseDate,
                 Position.Status.OPEN
             ), position
@@ -33,21 +33,21 @@ class TransactionTests {
 
     @Test
     fun `Test transaction sell`() {
-        val trader = NoOpTrader(money)
-        val position = Position(security, BigDecimal(10_000), BigDecimal(1).setScale(5), Date(), Position.Status.OPEN)
+        val trader = NoOpTrader(Dollar(BigDecimal.ZERO))
+        val position = Position(security, BigDecimal(10_000), Dollar(BigDecimal(1)), Date(), Position.Status.OPEN)
         val (transaction, resultingPosition) = Transaction.sell(position, TestConstants.growthCandle, trader)
 
-        Assert.assertEquals(Dollar(BigDecimal(20_000).setScale(5)), trader.money)
+        Assert.assertEquals(Dollar(BigDecimal(20_000)), trader.money)
         Assert.assertSame(position, resultingPosition)
         Assert.assertEquals(Transaction(security, BigDecimal(10_000), Transaction.Action.SELL), transaction)
         Assert.assertEquals(
             Position(
                 security,
                 BigDecimal(10_000),
-                BigDecimal.ONE.setScale(5),
+                Dollar(BigDecimal.ONE),
                 resultingPosition.purchaseDate,
                 Position.Status.CLOSED
-            ).apply { sellPrice = BigDecimal(1).setScale(5) }, resultingPosition
+            ).apply { sellPrice = TestConstants.growthCandle.sellPrice }, resultingPosition
         )
     }
 }

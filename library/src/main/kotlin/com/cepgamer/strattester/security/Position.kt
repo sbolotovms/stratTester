@@ -6,10 +6,10 @@ import java.util.*
 data class Position(
     val security: Stock,
     val quantity: BigDecimal,
-    val purchasePrice: BigDecimal,
+    val purchasePrice: Dollar,
     val purchaseDate: Date,
     var status: Status,
-    var sellPrice: BigDecimal = BigDecimal(-1)
+    var sellPrice: Dollar = Dollar(-1)
 ) {
     enum class Status {
         OPEN,

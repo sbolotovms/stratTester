@@ -23,7 +23,7 @@ class MetricCutoffStrategyTest {
         val strategy = MetricCutoffStrategy(metric, security)
         val trader = StrategyTrader(strategy, money)
 
-        strategy.priceUpdate(TestConstants.growthCandle)
+        trader.priceUpdate(TestConstants.growthCandle)
         Assert.assertEquals(
             listOf(Transaction(security, BigDecimal(5_000).setScale(5), Transaction.Action.BUY)),
             trader.transactions
@@ -33,7 +33,7 @@ class MetricCutoffStrategyTest {
                 Position(
                     security,
                     BigDecimal(5_000).setScale(5),
-                    BigDecimal(2).setScale(5),
+                    Dollar(BigDecimal(2)),
                     trader.openPositions[0].purchaseDate,
                     Position.Status.OPEN
                 )
