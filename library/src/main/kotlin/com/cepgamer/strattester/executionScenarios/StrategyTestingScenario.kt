@@ -2,6 +2,7 @@ package com.cepgamer.strattester.executionScenarios
 
 import com.cepgamer.strattester.generator.StrategyListGenerator
 import com.cepgamer.strattester.data.YahooWebDownloader
+import com.cepgamer.strattester.generator.TraderGenerator
 import com.cepgamer.strattester.parser.YahooJSONParser
 import com.cepgamer.strattester.runner.SavedDataTraderRunner
 import com.cepgamer.strattester.security.Stock
@@ -65,21 +66,17 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
             security to it
         }
 
-        val dailyStrats = StrategyListGenerator(security).generate(
+        val dailyStrats = StrategyListGenerator(security,
             haveCustom = haveCustom,
             haveMetricCutoffs = haveMetricCutoffs,
-            havePLCutoffs = havePLCutoffs,
-            haveInverse = haveInverse
-        )
-        val strats = StrategyListGenerator(security).generate(
+            haveInverse = haveInverse).generate()
+        val strats = StrategyListGenerator(security,
             haveCustom = haveCustom,
             haveMetricCutoffs = haveMetricCutoffs,
-            havePLCutoffs = havePLCutoffs,
-            haveInverse = haveInverse
-        )
+            haveInverse = haveInverse).generate()
 
-        val tradersByDay = dailyStrats.map { StrategyTrader(it, moneyAvailable()) }
-        val tradersByHour = strats.map { StrategyTrader(it, moneyAvailable()) }
+        val tradersByDay = TraderGenerator(dailyStrats, havePLCutoffs = havePLCutoffs).generate()
+        val tradersByHour = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate()
 
         val dailyRunner = SavedDataTraderRunner(
             tradersByDay, listOf(dailyData)

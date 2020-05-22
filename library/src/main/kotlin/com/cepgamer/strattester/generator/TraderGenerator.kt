@@ -41,12 +41,12 @@ class TraderGenerator(
         return list
     }
 
-    override fun generate(): List<BaseTrader> {
+    override fun generate(): List<() -> BaseTrader> {
         val baseList = generateStrategyTraders()
         val plList = if (havePLCutoffs)
             generatePLCutoffTraders()
         else
             emptyList()
-        return (baseList + plList).map { it() }
+        return (baseList + plList)
     }
 }

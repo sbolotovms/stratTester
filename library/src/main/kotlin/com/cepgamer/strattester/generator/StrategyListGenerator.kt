@@ -5,10 +5,12 @@ import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.strategy.*
 import java.math.BigDecimal
 
-class StrategyListGenerator(val security: Stock,
-                            val haveCustom: Boolean = false,
-                            val haveMetricCutoffs: Boolean = false,
-                            val haveInverse: Boolean = true) : Generator<BaseStrategy> {
+class StrategyListGenerator(
+    val security: Stock,
+    val haveCustom: Boolean = false,
+    val haveMetricCutoffs: Boolean = false,
+    val haveInverse: Boolean = true
+) : Generator<BaseStrategy> {
 
     private fun generateMetricStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
         val list =
@@ -43,7 +45,7 @@ class StrategyListGenerator(val security: Stock,
         metric: () -> BaseMetric,
         strats: (() -> BaseMetric) -> List<() -> BaseStrategy>,
         haveInverse: Boolean
-    ): List<BaseStrategy> {
+    ): List<() -> BaseStrategy> {
         val allStrats = strats(metric) +
                 generateInverseMetricStrategies(metric, strats) +
                 generateSwappedSignalMetricStrategies(metric, strats)
@@ -52,25 +54,14 @@ class StrategyListGenerator(val security: Stock,
                 else {
                     emptyList()
                 }
-        return alllStrats.map { it() }
+        return alllStrats
     }
 
-    override fun generate(): List<BaseStrategy> {
+    override fun generate(): List<() -> BaseStrategy> {
         val custom = listOf(
             BlankStrategy(security),
-            MetricCutoffStrategy(SimpleGrowthMetric(), security, BigDecimal(0)),
-            MetricCutoffStrategy(
-                SwapSignalMetric(SimpleGrowthMetric()),
-                security,
-                BigDecimal(0)
-            ),
-            MetricCutoffStrategy(
-                InverseMetric(SimpleGrowthMetric()),
-                security,
-                BigDecimal(0)
-            ),
             ConstantStrategy(security, BaseStrategy.Action.BUY)
-        )
+        ).map { { it } }
         val metricCutoffs =
             generateAllStrategies({ SimpleGrowthMetric() }, this::generateMetricStrategies, haveInverse) +
                     generateAllStrategies({ VolumeAmplifiedGrowth(10) }, this::generateMetricStrategies, haveInverse) +
