@@ -1,7 +1,9 @@
 package com.cepgamer.strattester.util
 
 object StratLogger {
-    var logger: ILogger? = null
+    var logger: ILogger?
+            // By default only log info and above
+            = ConsoleLogger(Level.I)
 
     enum class Level {
         E,
