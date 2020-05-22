@@ -1,6 +1,6 @@
 package com.cepgamer.strattester.executionScenarios
 
-import com.cepgamer.strattester.data.YahooWebDownloader
+import com.cepgamer.strattester.data.DataDownloadManager
 import com.cepgamer.strattester.generator.StrategyListGenerator
 import com.cepgamer.strattester.generator.TraderGenerator
 import com.cepgamer.strattester.parser.YahooJSONParser
@@ -12,22 +12,13 @@ import com.cepgamer.strattester.trader.BaseTrader
 import com.cepgamer.strattester.util.StratLogger
 import java.io.File
 import java.math.BigDecimal
+import java.time.YearMonth
 
-class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String) {
-    companion object {
-        const val feb1 = YahooWebDownloader.feb1
-        const val mar1 = YahooWebDownloader.mar1
-        const val apr1 = YahooWebDownloader.apr1
-        const val may1 = YahooWebDownloader.may1
-        val availableMonths = setOf("feb", "mar", "apr")//, "may")
-
-        private val monthsMapping = mapOf(
-            "feb" to (feb1 to mar1),
-            "mar" to (mar1 to apr1),
-            "apr" to (apr1 to may1)
-        )
-    }
-
+class StrategyTestingScenario(
+    val symbol: String,
+    val startDate: YearMonth,
+    val endDate: YearMonth
+) {
     val security = Stock(symbol)
 
     fun moneyAvailable(): Dollar = Dollar(10000)
@@ -47,18 +38,14 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
         """
     }
 
-    val yahooJsons: List<String>
-        get() = monthsMapping.entries.filter { testingMonths.contains(it.key) }.map {
-            YahooWebDownloader.getYahooHourlyData(symbol, it.value.first, it.value.second, it.key)
-        }
-
     fun runStrategyTests(
         haveCustom: Boolean = true,
         haveMetricCutoffs: Boolean = true,
         havePLCutoffs: Boolean = true,
         haveInverse: Boolean = true
     ) {
-        val rawData = yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
+        val downloader = DataDownloadManager(symbol, startDate, endDate)
+        val rawData = downloader.yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
         val data = rawData.map {
             security to it
         }
