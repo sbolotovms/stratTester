@@ -1,10 +1,9 @@
-package com.cepgamer.strattester
+package com.cepgamer.strattester.generator
 
 import com.cepgamer.strattester.metric.*
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.strategy.*
-import com.cepgamer.strattester.trader.ProfitLossLockTrader
 import java.math.BigDecimal
 
 class StrategyListGenerator(val security: Stock) {
@@ -20,18 +19,6 @@ class StrategyListGenerator(val security: Stock) {
                 moneyAvailable(),
                 10,
                 10
-            )
-        return list
-    }
-
-    private fun generatePLCutoffStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
-        val list =
-            ProfitLossLockTrader.generateNbyMTraders(
-                metric(),
-                moneyAvailable(),
-                listOf(1, 2, 3, 4, 5),
-                listOf(1, 2, 3, 4, 5),
-                listOf(5, 10, 25, 100, 200)
             )
         return list
     }

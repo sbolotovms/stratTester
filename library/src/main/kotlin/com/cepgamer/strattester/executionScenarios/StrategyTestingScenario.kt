@@ -1,6 +1,6 @@
 package com.cepgamer.strattester.executionScenarios
 
-import com.cepgamer.strattester.StrategyListGenerator
+import com.cepgamer.strattester.generator.StrategyListGenerator
 import com.cepgamer.strattester.data.YahooWebDownloader
 import com.cepgamer.strattester.parser.YahooJSONParser
 import com.cepgamer.strattester.runner.SavedDataTraderRunner
