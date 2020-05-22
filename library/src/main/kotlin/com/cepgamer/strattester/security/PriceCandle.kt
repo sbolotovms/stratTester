@@ -59,6 +59,14 @@ data class PriceCandle(
     val buyPrice: Dollar
         get() = close
 
+    val openToCloseGrowth: BigDecimal
+        get() {
+            return if (high == low)
+                BigDecimal.ZERO
+            else
+                (close - open) / (high - low)
+        }
+
     companion object {
         fun toDaily(candles: List<PriceCandle>): List<PriceCandle> {
             val listOfLists = candles.stream().collect(Collectors.groupingBy { candle: PriceCandle ->

@@ -17,7 +17,7 @@ class VolumeAmplifiedGrowth(private val trailingPrices: Int) : BaseMetric() {
             data.takeLast(trailingPrices + 1).take(trailingPrices).fold(BigDecimal(0).setScale(5), { acc, priceCandle ->
                 acc + priceCandle.volume
             }) / BigDecimal(trailingPrices).setScale(5)
-        val priceMovement = (last.close - last.open) / (last.high - last.low)
+        val priceMovement = last.openToCloseGrowth
         val untrimmedSignal = last.volume / averageVolume * priceMovement
 
         return if (isGood) {

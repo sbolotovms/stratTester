@@ -6,11 +6,8 @@ import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.strategy.BaseStrategy
 import com.cepgamer.strattester.strategy.BlankStrategy
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.spyk
-import io.mockk.verify
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 
 class TraderTests {

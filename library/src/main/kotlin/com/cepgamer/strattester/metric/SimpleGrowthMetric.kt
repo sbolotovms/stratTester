@@ -7,7 +7,7 @@ class SimpleGrowthMetric : BaseMetric() {
         get() = data[data.lastIndex]
 
     override val goodSignalInternal: BigDecimal
-        get() = (lastCandle.close - lastCandle.open) / (lastCandle.high - lastCandle.low)
+        get() = lastCandle.openToCloseGrowth
     override val badSignalInternal: BigDecimal
-        get() = (lastCandle.open - lastCandle.close) / (lastCandle.high - lastCandle.low)
+        get() = -lastCandle.openToCloseGrowth
 }

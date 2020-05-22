@@ -17,9 +17,7 @@ class TraderGenerator(
 
     private fun generateStrategyTraders(): List<() -> BaseTrader> {
         val list = strats.map {
-            {
-                StrategyTrader(it(), moneyAvailable())
-            }
+            { StrategyTrader(it(), moneyAvailable()) }
         }
 
         return list
@@ -30,8 +28,8 @@ class TraderGenerator(
             ProfitLossLockTrader.generateNbyMTraders(
                 it(),
                 moneyAvailable(),
-                listOf(1, 2, 3, 4, 5),
-                listOf(1, 2, 3, 4, 5),
+                listOf(1, 2, 5, 10, 15, 20, 25, 50),
+                listOf(1, 2, 5, 10, 15, 20, 25, 50),
                 listOf(5, 10, 25, 100, 200)
             )
         }.fold(emptyList()) { acc: List<() -> BaseTrader>, it: List<() -> BaseTrader> ->
