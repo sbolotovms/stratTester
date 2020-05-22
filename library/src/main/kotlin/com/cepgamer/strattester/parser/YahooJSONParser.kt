@@ -25,7 +25,7 @@ class YahooJSONParser(private val json: String?, filename: String? = null) : Bas
 
         val candles = result.getObject("indicators").getArray("quote")[0].jsonObject
 
-        return parseJsonCandles(timestamps, candles,)
+        return parseJsonCandles(timestamps, candles, stock)
     }
 
     private fun parseJsonCandles(

@@ -4,7 +4,7 @@ import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.strategy.BaseStrategy
 
-class StrategyTrader(val strategy: BaseStrategy, money: Dollar) : BaseTrader(money) {
+open class StrategyTrader(val strategy: BaseStrategy, money: Dollar) : BaseTrader(money) {
     override fun priceUpdate(priceCandle: PriceCandle) {
         val action = strategy.priceUpdate(priceCandle)
         when (action)
@@ -13,7 +13,9 @@ class StrategyTrader(val strategy: BaseStrategy, money: Dollar) : BaseTrader(mon
                 purchaseStock(priceCandle, strategy.security, money)
             BaseStrategy.Action.SELL ->
                 closePositions(priceCandle)
-            BaseStrategy.Action.HOLD -> TODO()
+            BaseStrategy.Action.HOLD ->
+                // ignore
+                Unit
         }
     }
 }

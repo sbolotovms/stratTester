@@ -26,15 +26,12 @@ class StrategyListGenerator(val security: Stock) {
 
     private fun generatePLCutoffStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
         val list =
-            ProfitLossLockTrader.generateNbyMStrategies(
+            ProfitLossLockTrader.generateNbyMTraders(
                 metric(),
-                security,
                 moneyAvailable(),
                 listOf(1, 2, 3, 4, 5),
                 listOf(1, 2, 3, 4, 5),
-                listOf(5, 10, 25, 100, 200),
-                10,
-                10
+                listOf(5, 10, 25, 100, 200)
             )
         return list
     }
