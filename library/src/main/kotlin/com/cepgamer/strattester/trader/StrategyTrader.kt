@@ -18,4 +18,10 @@ open class StrategyTrader(val strategy: BaseStrategy, money: Dollar) : BaseTrade
                 Unit
         }
     }
+
+    override fun toString(): String {
+        return super.toString() + """
+            Underlying strategy: $strategy            
+        """
+    }
 }
