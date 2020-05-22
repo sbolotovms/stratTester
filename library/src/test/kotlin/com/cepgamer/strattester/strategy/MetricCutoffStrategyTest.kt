@@ -6,6 +6,7 @@ import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.Position
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.Transaction
+import com.cepgamer.strattester.trader.StrategyTrader
 import org.junit.Assert
 import org.junit.Test
 import java.math.BigDecimal
@@ -19,13 +20,13 @@ class MetricCutoffStrategyTest {
     @Test
     fun `Test metric cutoff positive metric`() {
         val metric = ConstantMetric(BigDecimal.ONE, BigDecimal.ZERO)
-        val money = money
         val strategy = MetricCutoffStrategy(metric, security)
+        val trader = StrategyTrader(strategy, money)
 
         strategy.priceUpdate(TestConstants.growthCandle)
         Assert.assertEquals(
             listOf(Transaction(security, BigDecimal(5_000).setScale(5), Transaction.Action.BUY)),
-            strategy.transactions
+            trader.transactions
         )
         Assert.assertEquals(
             listOf(
@@ -33,23 +34,23 @@ class MetricCutoffStrategyTest {
                     security,
                     BigDecimal(5_000).setScale(5),
                     BigDecimal(2).setScale(5),
-                    strategy.openPositions[0].purchaseDate,
+                    trader.openPositions[0].purchaseDate,
                     Position.Status.OPEN
                 )
-            ), strategy.positions
+            ), trader.positions
         )
     }
 
     @Test
     fun `Test metric cutoff negative metric`() {
         val metric = ConstantMetric(BigDecimal(-1), BigDecimal.ONE)
-        val money = money
         val strategy = MetricCutoffStrategy(metric, security)
+        val trader = StrategyTrader(strategy, money)
 
         strategy.priceUpdate(TestConstants.growthCandle)
         Assert.assertEquals(
             emptyList<Transaction>(),
-            strategy.transactions
+            trader.transactions
         )
     }
 }

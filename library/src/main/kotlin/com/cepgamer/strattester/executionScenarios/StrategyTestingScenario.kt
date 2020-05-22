@@ -75,8 +75,8 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
             haveMetricCutoffs = haveMetricCutoffs,
             haveInverse = haveInverse).generate()
 
-        val tradersByDay = TraderGenerator(dailyStrats, havePLCutoffs = havePLCutoffs).generate()
-        val tradersByHour = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate()
+        val tradersByDay = TraderGenerator(dailyStrats, havePLCutoffs = havePLCutoffs).generate().map { it() }
+        val tradersByHour = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate().map { it() }
 
         val dailyRunner = SavedDataTraderRunner(
             tradersByDay, listOf(dailyData)
