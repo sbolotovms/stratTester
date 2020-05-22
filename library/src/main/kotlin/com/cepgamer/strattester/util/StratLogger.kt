@@ -17,4 +17,8 @@ object StratLogger {
     fun i(message: CharSequence) {
         logger?.log(message, Level.I)
     }
+
+    fun e(message: CharSequence) {
+        logger?.log(message, Level.I)
+    }
 }

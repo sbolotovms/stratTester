@@ -40,7 +40,7 @@ abstract class BaseTrader(var money: Dollar) {
             updateData(transaction)
             return BaseStrategy.Action.BUY
         } catch (e: Transaction.TransactionFailedException) {
-            StratLogger.i("Purchase failed: ${e.message}")
+            StratLogger.e("Purchase failed: ${e.message}")
         }
         return BaseStrategy.Action.HOLD
     }

@@ -5,7 +5,7 @@ import com.cepgamer.strattester.executionScenarios.StrategyTestingScenario
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {
-        var months = setOf("feb", "mar")
+        var months = setOf("feb")
         var stock = "TVIX"
         for (arg in args) {
             if (arg.startsWith("-m")) {

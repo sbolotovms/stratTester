@@ -2,7 +2,6 @@ package com.cepgamer.strattester.data
 
 import com.cepgamer.strattester.util.StratLogger
 import java.io.File
-import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -48,7 +47,7 @@ class YahooWebDownloader(
                 file.createNewFile()
                 file.writeText(json)
             } catch (e: Exception) {
-                StratLogger.i("Unable to write to file.")
+                StratLogger.e("Unable to write to file.")
             }
 
             return json

@@ -1,15 +1,15 @@
 package com.cepgamer.strattester.executionScenarios
 
-import com.cepgamer.strattester.generator.StrategyListGenerator
 import com.cepgamer.strattester.data.YahooWebDownloader
+import com.cepgamer.strattester.generator.StrategyListGenerator
 import com.cepgamer.strattester.generator.TraderGenerator
 import com.cepgamer.strattester.parser.YahooJSONParser
 import com.cepgamer.strattester.runner.SavedDataTraderRunner
-import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
+import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.trader.BaseTrader
-import com.cepgamer.strattester.trader.StrategyTrader
+import com.cepgamer.strattester.util.StratLogger
 import java.io.File
 import java.math.BigDecimal
 
@@ -85,17 +85,20 @@ class StrategyTestingScenario(val testingMonths: Set<String>, val symbol: String
             tradersByHour, listOf(data)
         )
 
+        StratLogger.i("""
+            Trader count: ${tradersByHour.size}
+            Total timestamp count: ${data.size}
+            Daily timestamp count: ${dailyData.size}
+        """)
+
         dailyRunner.run()
         runner.run()
 
         val firstOpen = data.first().second.open
         val lastClose = data.last().second.close
         val priceDiffPercent = lastClose / firstOpen * BigDecimal(100)
-        println(
+        StratLogger.i(
             """
-            Trader count: ${tradersByHour.size}
-            Total timestamp count: ${data.size}
-
             Opened at: $firstOpen
             Closed at: $lastClose
             Gain/loss: $priceDiffPercent %
