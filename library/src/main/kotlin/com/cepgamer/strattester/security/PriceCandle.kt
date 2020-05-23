@@ -53,19 +53,15 @@ data class PriceCandle(
         stock
     )
 
-    val sellPrice: Dollar
-        get() = close
+    val sellPrice: Dollar = close
 
-    val buyPrice: Dollar
-        get() = close
+    val buyPrice: Dollar = close
 
-    val openToCloseGrowth: BigDecimal
-        get() {
-            return if (high == low)
-                BigDecimal.ZERO
-            else
-                (close - open) / (high - low)
-        }
+    val openToCloseGrowth: BigDecimal =
+        if (high == low)
+            BigDecimal.ZERO
+        else
+            (close - open) / (high - low)
 
     companion object {
         fun toDaily(candles: List<PriceCandle>): List<PriceCandle> {

@@ -13,11 +13,13 @@ class DataDownloadManager(
 
     init {
         val formatter = DateTimeFormatter.ofPattern("MMM")
+        var dateI = startDate
+        val dateN = endDate.plusMonths(1)
 
-        while (startDate.isBefore(endDate)) {
-            val date = Date.from(startDate.atDay(1).atStartOfDay(ZoneId.systemDefault()).toInstant())
-            months += date.time / 1000 to startDate.format(formatter)
-            startDate.plusMonths(1)
+        while (dateI.isBefore(dateN)) {
+            val date = Date.from(dateI.atDay(1).atStartOfDay(ZoneId.systemDefault()).toInstant())
+            months += date.time / 1000 to dateI.format(formatter)
+            dateI = dateI.plusMonths(1)
         }
     }
 

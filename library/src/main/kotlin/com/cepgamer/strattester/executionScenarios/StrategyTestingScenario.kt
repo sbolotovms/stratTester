@@ -13,6 +13,7 @@ import com.cepgamer.strattester.util.StratLogger
 import java.io.File
 import java.math.BigDecimal
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
 class StrategyTestingScenario(
     val symbol: String,
@@ -28,14 +29,73 @@ class StrategyTestingScenario(
         reportAll: Boolean = false,
         successfulCriteria: BigDecimal = moneyAvailable()
     ): String {
+        val reportTop = 75
         return """${if (reportAll) traders.toString() else ""}
 ----------------------------------------------------------------
             Total Traders: ${traders.size}
             Any successful traders: ${traders.find { it.money > successfulCriteria } != null}
-            Top 20 Successful traders: ${traders.filter { it.money > successfulCriteria }
-            .sortedBy { it.money }.takeLast(20)}
+            Top $reportTop Successful traders: ${traders.filter { it.money > successfulCriteria }
+            .sortedBy { it.money }.takeLast(reportTop)}
 ----------------------------------------------------------------
         """
+    }
+
+    fun performRun(
+        data: List<Pair<Stock, PriceCandle>>,
+        haveCustom: Boolean = false,
+        haveMetricCutoffs: Boolean = false,
+        havePLCutoffs: Boolean = true,
+        haveInverse: Boolean = true,
+        fileSuffix: String
+    ) {
+        val strats = StrategyListGenerator(
+            security,
+            haveCustom = haveCustom,
+            haveMetricCutoffs = haveMetricCutoffs,
+            haveInverse = haveInverse
+        ).generate()
+        val traders = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate().map { it() }
+        val runner = SavedDataTraderRunner(
+            traders, listOf(data)
+        )
+        StratLogger.i(
+            """
+            Trader count: ${traders.size}
+            Total timestamp count: ${data.size}
+        """
+        )
+        runner.run()
+        val firstOpen = data.first().second.open
+        val lastClose = data.last().second.close
+
+        val priceDiffPercent = lastClose / firstOpen * BigDecimal(100)
+        StratLogger.i(
+            """
+            Opened at: $firstOpen
+            Closed at: $lastClose
+            Gain/loss: $priceDiffPercent %
+            
+            Best strat gain: ${traders.maxBy { it.money }?.money}
+            """
+        )
+
+        val res = tradersReport(
+            traders.filter { it.transactions.isNotEmpty() },
+            successfulCriteria = moneyAvailable().max(moneyAvailable() * (data.last().second.close / data.first().second.close))
+        )
+
+        val formatter = DateTimeFormatter.ofPattern("MMM")
+        val prefix = "${symbol}/${startDate.format(formatter)}_${endDate.format(formatter)}"
+        val writeFile = { result: String ->
+            { it: File ->
+                it.apply {
+                    parentFile.mkdirs()
+                    createNewFile()
+                    writeText(result)
+                }
+            }
+        }
+        File("$prefix/res_$fileSuffix.txt").let(writeFile(res))
     }
 
     fun runStrategyTests(
@@ -53,69 +113,46 @@ class StrategyTestingScenario(
             security to it
         }
 
-        val dailyStrats = StrategyListGenerator(security,
+        println("Running daily data")
+        performRun(
+            dailyData,
+            haveCustom,
+            haveMetricCutoffs,
+            havePLCutoffs,
+            haveInverse,
+            "daily"
+        )
+
+        println("Running hourly data")
+        performRun(
+            data,
+            haveCustom,
+            haveMetricCutoffs,
+            havePLCutoffs,
+            haveInverse,
+            "hourly"
+        )
+        return
+        val dailyStrats = StrategyListGenerator(
+            security,
             haveCustom = haveCustom,
             haveMetricCutoffs = haveMetricCutoffs,
-            haveInverse = haveInverse).generate()
-        val strats = StrategyListGenerator(security,
-            haveCustom = haveCustom,
-            haveMetricCutoffs = haveMetricCutoffs,
-            haveInverse = haveInverse).generate()
+            haveInverse = haveInverse
+        ).generate()
 
         val tradersByDay = TraderGenerator(dailyStrats, havePLCutoffs = havePLCutoffs).generate().map { it() }
-        val tradersByHour = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate().map { it() }
 
         val dailyRunner = SavedDataTraderRunner(
             tradersByDay, listOf(dailyData)
         )
-        val runner = SavedDataTraderRunner(
-            tradersByHour, listOf(data)
-        )
 
-        StratLogger.i("""
-            Trader count: ${tradersByHour.size}
-            Total timestamp count: ${data.size}
-            Daily timestamp count: ${dailyData.size}
-        """)
 
         dailyRunner.run()
-        runner.run()
-
-        val firstOpen = data.first().second.open
-        val lastClose = data.last().second.close
-        val priceDiffPercent = lastClose / firstOpen * BigDecimal(100)
-        StratLogger.i(
-            """
-            Opened at: $firstOpen
-            Closed at: $lastClose
-            Gain/loss: $priceDiffPercent %
-            
-            Best hourly strat gain: ${tradersByHour.maxBy { it.money }?.money}
-            Best daily strat gain: ${tradersByDay.maxBy { it.money }?.money}
-            """
-        )
 
         val dailyRes =
             tradersReport(
                 tradersByDay.filter { it.transactions.isNotEmpty() },
                 successfulCriteria = moneyAvailable().max(moneyAvailable() * (rawData.last().close / rawData.first().close))
             )
-        val res = tradersReport(tradersByHour.filter { it.transactions.isNotEmpty() },
-            successfulCriteria = moneyAvailable().max(moneyAvailable() * (rawData.last().close / rawData.first().close))
-        )
-
-        val prefix = "${symbol}/${testingMonths.joinToString("_")}"
-        val writeFile = { result: String ->
-            { it: File ->
-                it.apply {
-                    parentFile.mkdirs()
-                    createNewFile()
-                    writeText(result)
-                }
-            }
-        }
-        File("$prefix/dailyRes.txt").let(writeFile(dailyRes))
-
-        File("$prefix/res.txt").let(writeFile(res))
     }
 }
