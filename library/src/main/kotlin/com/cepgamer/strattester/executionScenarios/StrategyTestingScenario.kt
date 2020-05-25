@@ -46,10 +46,6 @@ class StrategyTestingScenario(
 
     fun performRun(
         data: List<Pair<Stock, PriceCandle>>,
-        haveCustom: Boolean = false,
-        haveMetricCutoffs: Boolean = false,
-        havePLCutoffs: Boolean = true,
-        haveInverse: Boolean = true,
         fileSuffix: String
     ) {
         val strats = StrategyListGenerator(
@@ -112,10 +108,6 @@ class StrategyTestingScenario(
         StratLogger.i("Running daily data")
         performRun(
             dailyData,
-            haveCustom,
-            haveMetricCutoffs,
-            havePLCutoffs,
-            haveInverse,
             "daily"
         )
     }
@@ -129,10 +121,6 @@ class StrategyTestingScenario(
         StratLogger.i("Running hourly data")
         performRun(
             data,
-            haveCustom,
-            haveMetricCutoffs,
-            havePLCutoffs,
-            haveInverse,
             "hourly"
         )
     }
