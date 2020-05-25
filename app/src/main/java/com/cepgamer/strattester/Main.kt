@@ -34,7 +34,7 @@ object Main {
                     NOTE no more than a year time frame for now.
                     
                     -s stock - stock on which to run tests.
-                    
+
                     -h - show this message.
                 """
                 )
@@ -44,8 +44,6 @@ object Main {
 
 
 
-        StrategyTestingScenario(stock, months.first, months.second).runStrategyTests(
-            haveInverse = false
-        )
+        StrategyTestingScenario(stock, months.first, months.second, haveInverse = false).runStrategyTests()
     }
 }

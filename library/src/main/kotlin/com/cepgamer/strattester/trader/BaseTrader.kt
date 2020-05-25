@@ -6,6 +6,8 @@ import com.cepgamer.strattester.util.StratLogger
 
 abstract class BaseTrader(var money: Dollar) {
 
+    val startMoney = Dollar(money)
+
     val transactions: MutableList<Transaction> = mutableListOf()
     val positions: MutableList<Position> = mutableListOf()
 

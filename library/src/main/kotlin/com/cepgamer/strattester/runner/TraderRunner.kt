@@ -9,14 +9,17 @@ import kotlinx.coroutines.runBlocking
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
-abstract class TraderRunner(private val traders: List<BaseTrader>) {
+abstract class TraderRunner(
+    private val traders: List<BaseTrader>,
+    val keepBad: Boolean = false
+) {
 
     fun updateTraders(securities: List<Pair<Stock, PriceCandle>>) {
         val counter = AtomicLong(0)
         val percentCounter = AtomicLong(0)
         val provideUpdate = AtomicBoolean(true)
         val total = traders.size * securities.size
-        traders.shuffled().chunked(traders.size / 10).map {
+        traders.shuffled().chunked(traders.size / 20).forEach {
             runBlocking {
                 it.map {
                     launch {
@@ -26,14 +29,19 @@ abstract class TraderRunner(private val traders: List<BaseTrader>) {
                         }
                         it.closePositions(securities.last().second)
                         if (provideUpdate.getAndSet(false)) {
-                            StratLogger.i("Completed ${counter.get()} updates out of $total; ${percentCounter.get()} %")
-                            System.gc()
+                            provideUpdate(counter.get(), total.toLong())
                         } else {
                             val old = percentCounter.get()
                             percentCounter.set(counter.get() * 100 / total)
                             provideUpdate.set(old / 10 != percentCounter.get() / 10)
                         }
                     }
+                }
+            }
+
+            if (!keepBad) {
+                it.filter { trader ->
+                    trader.money > trader.startMoney
                 }
             }
         }
@@ -45,6 +53,19 @@ abstract class TraderRunner(private val traders: List<BaseTrader>) {
                 it.closePositions(priceCandle)
             }
         }
+    }
+
+    private fun provideUpdate(
+        current: Long,
+        total: Long
+    ) {
+        StratLogger.i("Completed $current updates out of $total; ${current * 100L / total} %")
+        System.gc()
+        val totalMem = Runtime.getRuntime().totalMemory()
+        val freeMem = Runtime.getRuntime().freeMemory()
+        val trailingSpaces = "0".repeat(totalMem.toString().length - freeMem.toString().length)
+        StratLogger.i("Memory use:      $trailingSpaces${totalMem - freeMem}")
+        StratLogger.i("Total memory:    $totalMem")
     }
 
     abstract fun run()

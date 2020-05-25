@@ -7,8 +7,9 @@ import com.cepgamer.strattester.util.StratLogger
 
 class SavedDataTraderRunner(
     traders: List<BaseTrader>,
+    keepBad: Boolean = false,
     private val savedData: List<List<Pair<Stock, PriceCandle>>>
-) : TraderRunner(traders) {
+) : TraderRunner(traders, keepBad) {
     override fun run() {
         savedData.forEachIndexed { _: Int, next ->
             updateTraders(next)

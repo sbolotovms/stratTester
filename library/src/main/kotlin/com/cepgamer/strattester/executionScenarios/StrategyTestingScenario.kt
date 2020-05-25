@@ -18,7 +18,11 @@ import java.time.format.DateTimeFormatter
 class StrategyTestingScenario(
     val symbol: String,
     val startDate: YearMonth,
-    val endDate: YearMonth
+    val endDate: YearMonth,
+    val haveCustom: Boolean = true,
+    val haveMetricCutoffs: Boolean = true,
+    val havePLCutoffs: Boolean = true,
+    val haveInverse: Boolean = true
 ) {
     val security = Stock(symbol)
 
@@ -56,7 +60,7 @@ class StrategyTestingScenario(
         ).generate()
         val traders = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate().map { it() }
         val runner = SavedDataTraderRunner(
-            traders, listOf(data)
+            traders, false, listOf(data)
         )
         StratLogger.i(
             """
@@ -98,22 +102,14 @@ class StrategyTestingScenario(
         File("$prefix/res_$fileSuffix.txt").let(writeFile(res))
     }
 
-    fun runStrategyTests(
-        haveCustom: Boolean = true,
-        haveMetricCutoffs: Boolean = true,
-        havePLCutoffs: Boolean = true,
-        haveInverse: Boolean = true
+    fun runDailyData(
+        rawData: List<PriceCandle>
     ) {
-        val downloader = DataDownloadManager(symbol, startDate, endDate)
-        val rawData = downloader.yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
-        val data = rawData.map {
-            security to it
-        }
-        val dailyData = PriceCandle.toDaily(data.map { it.second }).map {
+        val dailyData = PriceCandle.toDaily(rawData).map {
             security to it
         }
 
-        println("Running daily data")
+        StratLogger.i("Running daily data")
         performRun(
             dailyData,
             haveCustom,
@@ -122,8 +118,15 @@ class StrategyTestingScenario(
             haveInverse,
             "daily"
         )
+    }
 
-        println("Running hourly data")
+    fun runHourlyData(
+        rawData: List<PriceCandle>
+    ) {
+        val data = rawData.map {
+            security to it
+        }
+        StratLogger.i("Running hourly data")
         performRun(
             data,
             haveCustom,
@@ -132,27 +135,14 @@ class StrategyTestingScenario(
             haveInverse,
             "hourly"
         )
-        return
-        val dailyStrats = StrategyListGenerator(
-            security,
-            haveCustom = haveCustom,
-            haveMetricCutoffs = haveMetricCutoffs,
-            haveInverse = haveInverse
-        ).generate()
+    }
 
-        val tradersByDay = TraderGenerator(dailyStrats, havePLCutoffs = havePLCutoffs).generate().map { it() }
+    fun runStrategyTests(
+    ) {
+        val downloader = DataDownloadManager(symbol, startDate, endDate)
+        val rawData = downloader.yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
 
-        val dailyRunner = SavedDataTraderRunner(
-            tradersByDay, listOf(dailyData)
-        )
-
-
-        dailyRunner.run()
-
-        val dailyRes =
-            tradersReport(
-                tradersByDay.filter { it.transactions.isNotEmpty() },
-                successfulCriteria = moneyAvailable().max(moneyAvailable() * (rawData.last().close / rawData.first().close))
-            )
+        runDailyData(rawData)
+        runHourlyData(rawData)
     }
 }
