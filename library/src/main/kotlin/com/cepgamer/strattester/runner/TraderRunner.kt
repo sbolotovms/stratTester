@@ -62,9 +62,9 @@ abstract class TraderRunner(
         StratLogger.i("Completed $current updates out of $total; ${current * 100L / total} %")
         System.gc()
         val totalMem = Runtime.getRuntime().totalMemory()
-        val freeMem = Runtime.getRuntime().freeMemory()
-        val trailingSpaces = "0".repeat(totalMem.toString().length - freeMem.toString().length)
-        StratLogger.i("Memory use:      $trailingSpaces${totalMem - freeMem}")
+        val usedMem = totalMem - Runtime.getRuntime().freeMemory()
+        val trailingSpaces = " ".repeat(totalMem.toString().length - usedMem.toString().length)
+        StratLogger.i("Memory use:      $trailingSpaces$usedMem")
         StratLogger.i("Total memory:    $totalMem")
     }
 
