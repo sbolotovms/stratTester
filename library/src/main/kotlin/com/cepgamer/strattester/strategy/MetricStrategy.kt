@@ -11,7 +11,6 @@ abstract class MetricStrategy(
 ) {
     override fun toString(): String {
         return super.toString() + """
-            Underlying metric: $metric
-        """
+            Underlying metric: $metric"""
     }
 }

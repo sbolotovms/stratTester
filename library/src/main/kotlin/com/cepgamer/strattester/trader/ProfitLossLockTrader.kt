@@ -39,8 +39,7 @@ class ProfitLossLockTrader(
     override fun toString(): String {
         return super.toString() + """
                 Profit cutoff: $profitCutoffPercentage
-                Loss cutoff: $lossCutoffPercentage
-            """
+                Loss cutoff: $lossCutoffPercentage"""
     }
 
     companion object {

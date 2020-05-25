@@ -1,8 +1,8 @@
 package com.cepgamer.strattester.strategy
 
 import com.cepgamer.strattester.metric.BaseMetric
-import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.security.PriceCandle
+import com.cepgamer.strattester.security.Stock
 import java.math.BigDecimal
 
 open class MetricCutoffStrategy(
@@ -27,8 +27,7 @@ open class MetricCutoffStrategy(
     override fun toString(): String {
         return super.toString() + """
             Good signal cutoff: $goodSignalCutoff
-            Bad signal cutoff: $badSignalCutoff
-        """
+            Bad signal cutoff: $badSignalCutoff"""
     }
 
     companion object {

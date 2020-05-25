@@ -84,7 +84,7 @@ class StrategyTestingScenario(
             successfulCriteria = moneyAvailable.max(moneyAvailable * (data.last().second.close / data.first().second.close))
         )
 
-        val formatter = DateTimeFormatter.ofPattern("MMM_YY")
+        val formatter = DateTimeFormatter.ofPattern("MMM/YY")
         val prefix = "${symbol}/${startDate.format(formatter)}_${endDate.format(formatter)}"
         val writeFile = { result: String ->
             { it: File ->

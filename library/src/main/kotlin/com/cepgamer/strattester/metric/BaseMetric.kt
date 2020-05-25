@@ -1,7 +1,6 @@
 package com.cepgamer.strattester.metric
 
 import com.cepgamer.strattester.security.PriceCandle
-import java.lang.IllegalStateException
 import java.math.BigDecimal
 
 abstract class BaseMetric {
@@ -24,7 +23,7 @@ abstract class BaseMetric {
         }
 
     override fun toString(): String {
-        return "Metric: ${this::class.simpleName}"
+        return "\nMetric: ${this::class.simpleName}"
     }
 
     protected abstract val badSignalInternal: BigDecimal
