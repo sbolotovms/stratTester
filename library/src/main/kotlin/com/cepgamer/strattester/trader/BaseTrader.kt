@@ -4,14 +4,23 @@ import com.cepgamer.strattester.security.*
 import com.cepgamer.strattester.strategy.BaseStrategy
 import com.cepgamer.strattester.util.StratLogger
 import java.util.*
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.collections.ArrayList
 
-abstract class BaseTrader(var money: Dollar) {
+abstract class BaseTrader(money: Dollar) {
+
+    private val _moneyInternal = AtomicReference(money)
+    var money: Dollar
+        get() = _moneyInternal.get()
+
+        set(value) {
+            _moneyInternal.set(value)
+        }
 
     val startMoney = Dollar(money)
 
-    val transactions: MutableList<Transaction> = mutableListOf()
-    val positions: MutableList<Position> = mutableListOf()
+    val transactions: MutableList<Transaction> = Collections.synchronizedList(mutableListOf())
+    val positions: MutableList<Position> = Collections.synchronizedList(mutableListOf())
 
     val openPositions: MutableList<Position> = Collections.synchronizedList(mutableListOf())
 
@@ -38,11 +47,13 @@ abstract class BaseTrader(var money: Dollar) {
         moneyToUse: Dollar
     ): BaseStrategy.Action {
         try {
-            if (money < moneyToUse)
-                throw TradingException("Insufficient funds")
-            val transaction = Transaction.purchase(security, priceCandle, this, moneyToUse)
-            updateData(transaction)
-            return BaseStrategy.Action.BUY
+            synchronized(this) {
+                if (money < moneyToUse)
+                    throw TradingException("Insufficient funds")
+                val transaction = Transaction.purchase(security, priceCandle, this, moneyToUse)
+                updateData(transaction)
+                return BaseStrategy.Action.BUY
+            }
         } catch (e: TradingException) {
             StratLogger.e("Purchase failed: ${e.message}")
         }
@@ -60,8 +71,10 @@ abstract class BaseTrader(var money: Dollar) {
     }
 
     fun closePosition(priceCandle: PriceCandle, position: Position) {
-        val transaction = Transaction.sell(position, priceCandle, this)
-        updateData(transaction)
+        synchronized(this) {
+            val transaction = Transaction.sell(position, priceCandle, this)
+            updateData(transaction)
+        }
     }
 
     override fun toString(): String {

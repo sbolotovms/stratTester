@@ -20,8 +20,8 @@ abstract class TraderRunner(
 
     fun updateTraders(stockList: List<Pair<Stock, PriceCandle>>): List<BaseTrader> {
         val total = traders.size * stockList.size
-        val jobs = traders.shuffled().chunked(chunkSize) { trader ->
-            startTraderTestingAsync(stockList, trader, total.toLong())
+        val jobs = traders.shuffled().chunked(chunkSize) { traders ->
+            startTraderTestingAsync(stockList, traders, total.toLong())
         }
 
         val res = runBlocking {
@@ -54,11 +54,13 @@ abstract class TraderRunner(
         stockList: List<Pair<Stock, PriceCandle>>,
         total: Long
     ): BaseTrader {
-        for (pair in stockList.take(stockList.size - 1)) {
+        val loopThrough = stockList.take(stockList.size - 1)
+        for (pair in loopThrough) {
             trader.priceUpdate(pair.second)
             counter.incrementAndGet()
         }
         trader.closePositions(stockList.last().second)
+        counter.incrementAndGet()
 
         if (provideUpdate.getAndSet(false)) {
             provideUpdate(counter.get(), total)

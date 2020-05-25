@@ -22,31 +22,35 @@ data class Transaction(val security: Stock, val quantity: BigDecimal, val action
             trader: BaseTrader,
             money: Dollar
         ): Pair<Transaction, Position> {
-            val buyPrice = priceCandle.buyPrice
-            if (buyPrice >= money) {
-                throw TransactionFailedException("Not enough money")
+            synchronized(trader) {
+                val buyPrice = priceCandle.buyPrice
+                if (buyPrice >= money) {
+                    throw TransactionFailedException("Not enough money")
+                }
+
+                val quantity = money.divide(buyPrice, RoundingMode.FLOOR).setScale(0, RoundingMode.FLOOR).setScale(5)
+                trader.money -= buyPrice * quantity
+
+                return Transaction(security, quantity, Action.BUY) to Position(
+                    security,
+                    quantity,
+                    buyPrice,
+                    Date(priceCandle.openTimestamp),
+                    Position.Status.OPEN
+                )
             }
-
-            val quantity = money.divide(buyPrice, RoundingMode.FLOOR).setScale(0, RoundingMode.FLOOR).setScale(5)
-            trader.money -= buyPrice * quantity
-
-            return Transaction(security, quantity, Action.BUY) to Position(
-                security,
-                quantity,
-                buyPrice,
-                Date(priceCandle.openTimestamp),
-                Position.Status.OPEN
-            )
         }
 
         fun sell(position: Position, priceCandle: PriceCandle, trader: BaseTrader): Pair<Transaction, Position> {
-            val sellingPrice = priceCandle.sellPrice
-            trader.money += sellingPrice * position.quantity
-            position.apply {
-                sellPrice = sellingPrice
-                status = Position.Status.CLOSED
+            synchronized(trader) {
+                val sellingPrice = priceCandle.sellPrice
+                trader.money += sellingPrice * position.quantity
+                position.apply {
+                    sellPrice = sellingPrice
+                    status = Position.Status.CLOSED
+                }
+                return Transaction(position.security, position.quantity, Action.SELL) to position
             }
-            return Transaction(position.security, position.quantity, Action.SELL) to position
         }
     }
 }
