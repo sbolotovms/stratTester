@@ -26,12 +26,12 @@ class StrategyTestingScenario(
 ) {
     val security = Stock(symbol)
 
-    fun moneyAvailable(): Dollar = Dollar(10000)
+    val moneyAvailable: Dollar get() = Dollar(10000)
 
     fun tradersReport(
         traders: List<BaseTrader>,
         reportAll: Boolean = false,
-        successfulCriteria: BigDecimal = moneyAvailable()
+        successfulCriteria: BigDecimal = moneyAvailable
     ): String {
         val reportTop = 75
         return """${if (reportAll) traders.toString() else ""}
@@ -81,10 +81,10 @@ class StrategyTestingScenario(
 
         val res = tradersReport(
             traders.filter { it.transactions.isNotEmpty() },
-            successfulCriteria = moneyAvailable().max(moneyAvailable() * (data.last().second.close / data.first().second.close))
+            successfulCriteria = moneyAvailable.max(moneyAvailable * (data.last().second.close / data.first().second.close))
         )
 
-        val formatter = DateTimeFormatter.ofPattern("MMM")
+        val formatter = DateTimeFormatter.ofPattern("MMM_YY")
         val prefix = "${symbol}/${startDate.format(formatter)}_${endDate.format(formatter)}"
         val writeFile = { result: String ->
             { it: File ->
