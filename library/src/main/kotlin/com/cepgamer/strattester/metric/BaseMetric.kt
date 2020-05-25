@@ -5,6 +5,8 @@ import java.math.BigDecimal
 import java.util.*
 
 abstract class BaseMetric {
+
+    // For concurrent calculation and access to data
     val data: MutableList<PriceCandle> = Collections.synchronizedList(mutableListOf())
 
     open fun newData(priceCandle: PriceCandle) {
