@@ -3,6 +3,8 @@ package com.cepgamer.strattester.trader
 import com.cepgamer.strattester.security.*
 import com.cepgamer.strattester.strategy.BaseStrategy
 import com.cepgamer.strattester.util.StratLogger
+import java.util.*
+import kotlin.collections.ArrayList
 
 abstract class BaseTrader(var money: Dollar) {
 
@@ -11,7 +13,7 @@ abstract class BaseTrader(var money: Dollar) {
     val transactions: MutableList<Transaction> = mutableListOf()
     val positions: MutableList<Position> = mutableListOf()
 
-    val openPositions: MutableList<Position> = mutableListOf()
+    val openPositions: MutableList<Position> = Collections.synchronizedList(mutableListOf())
 
     abstract fun priceUpdate(priceCandle: PriceCandle)
 
@@ -41,7 +43,7 @@ abstract class BaseTrader(var money: Dollar) {
             val transaction = Transaction.purchase(security, priceCandle, this, moneyToUse)
             updateData(transaction)
             return BaseStrategy.Action.BUY
-        } catch (e: Transaction.TransactionFailedException) {
+        } catch (e: TradingException) {
             StratLogger.e("Purchase failed: ${e.message}")
         }
         return BaseStrategy.Action.HOLD

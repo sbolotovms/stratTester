@@ -2,10 +2,10 @@ package com.cepgamer.strattester.metric
 
 import com.cepgamer.strattester.security.PriceCandle
 import java.math.BigDecimal
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.*
 
 abstract class BaseMetric {
-    val data: MutableList<PriceCandle> = CopyOnWriteArrayList()
+    val data: MutableList<PriceCandle> = Collections.synchronizedList(mutableListOf())
 
     open fun newData(priceCandle: PriceCandle) {
         data.add(priceCandle)

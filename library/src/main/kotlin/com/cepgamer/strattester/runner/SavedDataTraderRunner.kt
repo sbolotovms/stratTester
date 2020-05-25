@@ -11,8 +11,9 @@ class SavedDataTraderRunner(
     private val savedData: List<List<Pair<Stock, PriceCandle>>>
 ) : TraderRunner(traders, keepBad) {
     override fun run() {
-        savedData.forEachIndexed { _: Int, next ->
-            updateTraders(next)
+        savedData.fold(mutableListOf()) { acc: MutableList<BaseTrader>, next ->
+            acc += updateTraders(next)
+            acc
         }
         StratLogger.i("Finished running traders")
     }

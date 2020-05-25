@@ -1,6 +1,7 @@
 package com.cepgamer.strattester.security
 
 import com.cepgamer.strattester.trader.BaseTrader
+import com.cepgamer.strattester.trader.TradingException
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -11,7 +12,7 @@ data class Transaction(val security: Stock, val quantity: BigDecimal, val action
         SELL
     }
 
-    class TransactionFailedException(reason: String) : Exception("Transaction failed, reason: $reason")
+    class TransactionFailedException(reason: String) : TradingException("Transaction failed, reason: $reason")
 
     companion object {
         @Throws(TransactionFailedException::class)

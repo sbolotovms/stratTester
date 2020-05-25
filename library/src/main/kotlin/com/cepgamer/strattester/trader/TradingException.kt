@@ -1,4 +1,4 @@
 package com.cepgamer.strattester.trader
 
-class TradingException(message: String) : Throwable(message) {
+open class TradingException(message: String) : Throwable(message) {
 }
