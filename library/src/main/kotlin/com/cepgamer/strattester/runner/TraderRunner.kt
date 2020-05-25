@@ -4,6 +4,7 @@ import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.trader.BaseTrader
 import com.cepgamer.strattester.util.StratLogger
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.atomic.AtomicBoolean
@@ -14,27 +15,25 @@ abstract class TraderRunner(
     val keepBad: Boolean = false
 ) {
 
-    fun updateTraders(securities: List<Pair<Stock, PriceCandle>>) {
+    fun updateTraders(stockList: List<Pair<Stock, PriceCandle>>) {
         val counter = AtomicLong(0)
         val percentCounter = AtomicLong(0)
         val provideUpdate = AtomicBoolean(true)
-        val total = traders.size * securities.size
-        traders.shuffled().chunked(traders.size / 20).forEach {
-            runBlocking {
-                it.map {
-                    launch {
-                        for (pair in securities.take(securities.size - 1)) {
-                            it.priceUpdate(pair.second)
-                            counter.incrementAndGet()
-                        }
-                        it.closePositions(securities.last().second)
-                        if (provideUpdate.getAndSet(false)) {
-                            provideUpdate(counter.get(), total.toLong())
-                        } else {
-                            val old = percentCounter.get()
-                            percentCounter.set(counter.get() * 100 / total)
-                            provideUpdate.set(old / 10 != percentCounter.get() / 10)
-                        }
+        val total = traders.size * stockList.size
+        traders.shuffled().chunked(traders.size / 20).map {
+            it.map { trader ->
+                GlobalScope.launch {
+                    for (pair in stockList.take(stockList.size - 1)) {
+                        trader.priceUpdate(pair.second)
+                        counter.incrementAndGet()
+                    }
+                    trader.closePositions(stockList.last().second)
+                    if (provideUpdate.getAndSet(false)) {
+                        provideUpdate(counter.get(), total.toLong())
+                    } else {
+                        val old = percentCounter.get()
+                        percentCounter.set(counter.get() * 100 / total)
+                        provideUpdate.set(old / 10 != percentCounter.get() / 10)
                     }
                 }
             }
@@ -43,6 +42,8 @@ abstract class TraderRunner(
                 it.filter { trader ->
                     trader.money > trader.startMoney
                 }
+            } else {
+                it
             }
         }
     }

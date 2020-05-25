@@ -8,7 +8,7 @@ data class PriceCandle(
     val close: Dollar,
     val low: Dollar,
     val high: Dollar,
-    var volume: BigDecimal,
+    val volume: BigDecimal,
     val openTimestamp: Long,
     val timespan: Int,
     val stock: Stock
@@ -52,6 +52,19 @@ data class PriceCandle(
         timespan,
         stock
     )
+
+    fun deepCopy(): PriceCandle {
+        return PriceCandle(
+            open = Dollar(open),
+            close = Dollar(close),
+            low = Dollar(low),
+            high = Dollar(high),
+            volume = BigDecimal(volume.toPlainString()),
+            openTimestamp = openTimestamp,
+            timespan = timespan,
+            stock = stock
+        )
+    }
 
     val sellPrice: Dollar = close
 
