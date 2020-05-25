@@ -5,6 +5,7 @@ import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.trader.BaseTrader
 import com.cepgamer.strattester.util.StratLogger
 import kotlinx.coroutines.*
+import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
@@ -20,12 +21,12 @@ abstract class TraderRunner(
 
     fun updateTraders(stockList: List<Pair<Stock, PriceCandle>>): List<BaseTrader> {
         val total = traders.size * stockList.size
-        val jobs = traders.shuffled().chunked(chunkSize) { traders ->
-            startTraderTestingAsync(stockList, traders, total.toLong())
+        val jobs = traders.shuffled().map { trader ->
+            startTraderTestingAsync(stockList, trader, total.toLong())
         }
 
         val res = runBlocking {
-            jobs.fold(mutableListOf()) { acc: MutableList<BaseTrader>, job: Deferred<List<BaseTrader>> ->
+            jobs.fold(Collections.synchronizedList(mutableListOf())) { acc: MutableList<BaseTrader>, job: Deferred<BaseTrader> ->
                 acc += job.await()
                 acc
             }
@@ -38,15 +39,11 @@ abstract class TraderRunner(
 
     private fun startTraderTestingAsync(
         stockList: List<Pair<Stock, PriceCandle>>,
-        traders: List<BaseTrader>,
+        trader: BaseTrader,
         total: Long
-    ): Deferred<List<BaseTrader>> =
+    ): Deferred<BaseTrader> =
         GlobalScope.async {
-            traders.map { trader ->
-                runTrader(trader, stockList, total)
-            }.filter {
-                keepBad || it.money > it.startMoney
-            }
+            runTrader(trader, stockList, total)
         }
 
     private fun runTrader(

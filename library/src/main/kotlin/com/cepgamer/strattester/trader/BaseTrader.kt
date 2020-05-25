@@ -3,9 +3,7 @@ package com.cepgamer.strattester.trader
 import com.cepgamer.strattester.security.*
 import com.cepgamer.strattester.strategy.BaseStrategy
 import com.cepgamer.strattester.util.StratLogger
-import java.util.*
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.collections.ArrayList
 
 abstract class BaseTrader(money: Dollar) {
 
@@ -19,10 +17,10 @@ abstract class BaseTrader(money: Dollar) {
 
     val startMoney = Dollar(money)
 
-    val transactions: MutableList<Transaction> = Collections.synchronizedList(mutableListOf())
-    val positions: MutableList<Position> = Collections.synchronizedList(mutableListOf())
+    val transactions: MutableList<Transaction> = mutableListOf()
+    val positions: MutableList<Position> = mutableListOf()
 
-    val openPositions: MutableList<Position> = Collections.synchronizedList(mutableListOf())
+    val openPositions: MutableList<Position> = mutableListOf()
 
     abstract fun priceUpdate(priceCandle: PriceCandle)
 
