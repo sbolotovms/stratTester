@@ -2,7 +2,7 @@ package com.cepgamer.strattester.util
 
 object StratLogger {
     var logger: ILogger?
-            // By default only log info and above
+    // By default only log info and above
             = ConsoleLogger(Level.I)
 
     enum class Level {
@@ -17,10 +17,14 @@ object StratLogger {
     }
 
     fun i(message: CharSequence) {
-        logger?.log(message, Level.I)
+        synchronized(this) {
+            logger?.log(message, Level.I)
+        }
     }
 
     fun e(message: CharSequence) {
-        logger?.log(message, Level.E)
+        synchronized(this) {
+            logger?.log(message, Level.E)
+        }
     }
 }

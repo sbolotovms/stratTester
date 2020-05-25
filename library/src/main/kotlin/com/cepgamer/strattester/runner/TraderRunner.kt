@@ -5,6 +5,7 @@ import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.trader.BaseTrader
 import com.cepgamer.strattester.util.StratLogger
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.atomic.AtomicBoolean
@@ -14,39 +15,44 @@ abstract class TraderRunner(
     private val traders: List<BaseTrader>,
     val keepBad: Boolean = false
 ) {
+    val counter = AtomicLong(0)
+    val percentCounter = AtomicLong(0)
+    val provideUpdate = AtomicBoolean(true)
 
     fun updateTraders(stockList: List<Pair<Stock, PriceCandle>>) {
-        val counter = AtomicLong(0)
-        val percentCounter = AtomicLong(0)
-        val provideUpdate = AtomicBoolean(true)
         val total = traders.size * stockList.size
-        traders.shuffled().chunked(traders.size / 20).map {
-            it.map { trader ->
-                GlobalScope.launch {
-                    for (pair in stockList.take(stockList.size - 1)) {
-                        trader.priceUpdate(pair.second)
-                        counter.incrementAndGet()
-                    }
-                    trader.closePositions(stockList.last().second)
-                    if (provideUpdate.getAndSet(false)) {
-                        provideUpdate(counter.get(), total.toLong())
-                    } else {
-                        val old = percentCounter.get()
-                        percentCounter.set(counter.get() * 100 / total)
-                        provideUpdate.set(old / 10 != percentCounter.get() / 10)
-                    }
-                }
-            }
+        val jobs = traders.shuffled().map { trader ->
+            startTraderTesting(stockList, trader, total.toLong())
+        }
 
-            if (!keepBad) {
-                it.filter { trader ->
-                    trader.money > trader.startMoney
-                }
-            } else {
-                it
+        runBlocking {
+            jobs.forEach { job ->
+                job.join()
             }
         }
+
+        StratLogger.i("Finished running traders")
     }
+
+    private fun startTraderTesting(
+        stockList: List<Pair<Stock, PriceCandle>>,
+        trader: BaseTrader,
+        total: Long
+    ): Job =
+        GlobalScope.launch {
+            for (pair in stockList.take(stockList.size - 1)) {
+                trader.priceUpdate(pair.second)
+                counter.incrementAndGet()
+            }
+            trader.closePositions(stockList.last().second)
+            if (provideUpdate.getAndSet(false)) {
+                provideUpdate(counter.get(), total)
+            } else {
+                val old = percentCounter.get()
+                percentCounter.set(counter.get() * 100 / total)
+                provideUpdate.set(old / 10 != percentCounter.get() / 10)
+            }
+        }
 
     fun closePositions(priceCandle: PriceCandle) = runBlocking {
         traders.map {
