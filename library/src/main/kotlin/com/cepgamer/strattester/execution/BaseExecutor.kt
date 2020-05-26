@@ -1,15 +1,14 @@
 package com.cepgamer.strattester.execution
 
 import com.cepgamer.strattester.security.Dollar
+import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.trader.BaseTrader
 import java.math.BigDecimal
-import java.time.YearMonth
 
 abstract class BaseExecutor(
     val symbol: String,
-    val startDate: YearMonth,
-    val endDate: YearMonth
+    val rawData: List<PriceCandle>
 ) {
     val security = Stock(symbol)
 

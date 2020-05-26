@@ -1,6 +1,6 @@
 package com.cepgamer.strattester
 
-import com.cepgamer.strattester.execution.GeneratedStrategiesExecutor
+import com.cepgamer.strattester.execution.YahooDataGeneratedStrategiesExecutor
 import java.time.Month
 import java.time.YearMonth
 
@@ -67,7 +67,7 @@ object Main {
 
 
 
-        GeneratedStrategiesExecutor(
+        YahooDataGeneratedStrategiesExecutor(
             stock,
             months.first,
             months.second,

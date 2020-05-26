@@ -2,17 +2,19 @@ package com.cepgamer.strattester.execution
 
 import com.cepgamer.strattester.generator.StrategyListGenerator
 import com.cepgamer.strattester.generator.TraderGenerator
+import com.cepgamer.strattester.security.PriceCandle
 import java.time.YearMonth
 
-class GeneratedStrategiesExecutor(
+open class GeneratedStrategiesTradersExecutor(
     symbol: String,
+    rawData: List<PriceCandle>,
     startDate: YearMonth,
     endDate: YearMonth,
     haveCustom: Boolean = true,
     haveMetricCutoffs: Boolean = true,
     havePLCutoffs: Boolean = true,
     haveInverse: Boolean = true
-) : BaseExecutor(symbol, startDate, endDate) {
+) : BaseExecutor(symbol, rawData) {
 
     private val traderTestingExecutor: TraderTestingExecutor
 
@@ -25,10 +27,11 @@ class GeneratedStrategiesExecutor(
         ).generate()
         val traders = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate().map { it() }
 
-        traderTestingExecutor = TraderTestingExecutor(symbol, startDate, endDate, traders)
+        traderTestingExecutor = TraderTestingExecutor(symbol, rawData, startDate, endDate, traders)
     }
 
     override fun execute() {
+
         traderTestingExecutor.execute()
     }
 }

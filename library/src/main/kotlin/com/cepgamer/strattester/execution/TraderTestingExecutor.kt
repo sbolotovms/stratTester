@@ -1,7 +1,5 @@
 package com.cepgamer.strattester.execution
 
-import com.cepgamer.strattester.data.DataDownloadManager
-import com.cepgamer.strattester.parser.YahooJSONParser
 import com.cepgamer.strattester.runner.SavedDataTraderRunner
 import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.security.Stock
@@ -14,10 +12,11 @@ import java.time.format.DateTimeFormatter
 
 class TraderTestingExecutor(
     symbol: String,
-    startDate: YearMonth,
-    endDate: YearMonth,
-    val traders: List<BaseTrader>
-): BaseExecutor(symbol, startDate, endDate) {
+    rawData: List<PriceCandle>,
+    val startDate: YearMonth,
+    val endDate: YearMonth,
+    private val traders: List<BaseTrader>
+) : BaseExecutor(symbol, rawData) {
 
     fun performRun(
         data: List<Pair<Stock, PriceCandle>>,
@@ -94,9 +93,6 @@ class TraderTestingExecutor(
     }
 
     override fun execute() {
-        val downloader = DataDownloadManager(symbol, startDate, endDate)
-        val rawData = downloader.yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
-
         runDailyData(rawData)
         runHourlyData(rawData)
     }

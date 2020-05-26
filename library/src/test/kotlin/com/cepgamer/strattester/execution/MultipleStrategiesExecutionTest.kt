@@ -28,6 +28,8 @@ class MultipleStrategiesExecutionTest {
     fun `Test regular list of candles`() {
         val traders = getAssertionTraders(listOfCandles)
 
-        TraderTestingExecutor()
+        TraderTestingExecutor(
+
+        )
     }
 }
