@@ -29,7 +29,7 @@ class MetricCutoffStrategyTest {
             trader.transactions
         )
         Assert.assertEquals(
-            listOf(
+            setOf(
                 Position(
                     security,
                     BigDecimal(5_000).setScale(5),

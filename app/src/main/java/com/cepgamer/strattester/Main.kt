@@ -16,6 +16,14 @@ object Main {
         var stock = "TVIX"
         for (arg in args) {
             when {
+                arg == "-c" ->
+                    haveCustom = true
+                arg == "-mc" ->
+                    haveMetricCutoffs = true
+                arg == "-pl" ->
+                    havePLCutoffs = true
+                arg == "-i" ->
+                    haveInverse = true
                 arg.startsWith("-m") -> {
                     val pairAsList = arg
                         .substring(2)
@@ -32,14 +40,6 @@ object Main {
                         .substring(2)
                         .trim().trim { it == '=' }
                 }
-                arg == "-c" ->
-                    haveCustom = true
-                arg == "-mc" ->
-                    haveMetricCutoffs = true
-                arg == "-pl" ->
-                    haveCustom = true
-                arg == "-i" ->
-                    haveInverse = true
                 arg == "-h" -> {
                     println(
                         """
