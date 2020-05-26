@@ -16,9 +16,9 @@ class YahooDataGeneratedStrategiesExecutor(
 ) : GeneratedStrategiesTradersExecutor(
     symbol,
     downloadRawData(symbol, startDate, endDate),
-    startDate,
-    endDate,
-    haveCustom, haveMetricCutoffs, havePLCutoffs, haveInverse
+    haveCustom,
+    haveMetricCutoffs,
+    havePLCutoffs, haveInverse
 ) {
     companion object {
         fun downloadRawData(symbol: String, startDate: YearMonth, endDate: YearMonth): List<PriceCandle> {

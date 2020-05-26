@@ -2,6 +2,7 @@ package com.cepgamer.strattester.execution
 
 import com.cepgamer.strattester.runner.SavedDataTraderRunner
 import com.cepgamer.strattester.security.PriceCandle
+import com.cepgamer.strattester.security.PriceCandleConverter
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.trader.BaseTrader
 import com.cepgamer.strattester.util.StratLogger
@@ -54,7 +55,7 @@ class TraderTestingExecutor(
     fun runDailyData(
         rawData: List<PriceCandle>
     ) {
-        val dailyData = PriceCandle.toDaily(rawData).map {
+        val dailyData = PriceCandleConverter().toDaily(rawData).map {
             security to it
         }
 
