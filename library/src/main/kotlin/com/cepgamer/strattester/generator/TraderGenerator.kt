@@ -41,6 +41,7 @@ class TraderGenerator(
 
     override fun generate(): List<() -> BaseTrader> {
         val baseList = generateStrategyTraders()
+        return listOf(generatePLCutoffTraders()[10115])
         val plList = if (havePLCutoffs)
             generatePLCutoffTraders()
         else
