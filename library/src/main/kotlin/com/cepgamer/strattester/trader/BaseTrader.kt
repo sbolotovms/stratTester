@@ -26,10 +26,10 @@ abstract class BaseTrader(money: Dollar) {
 
     fun updateData(pair: Pair<Transaction, Position>) {
         transactions.add(pair.first)
-        positions.add(pair.second)
 
         if (pair.second.status == Position.Status.OPEN) {
             openPositions.add(pair.second)
+            positions.add(pair.second)
         } else {
             openPositions.remove(pair.second)
         }

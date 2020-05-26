@@ -7,12 +7,18 @@ import com.cepgamer.strattester.strategy.BaseStrategy
 import com.cepgamer.strattester.strategy.BlankStrategy
 import io.mockk.every
 import io.mockk.spyk
+import org.junit.After
 import org.junit.Assert
 import org.junit.Test
 
 class TraderTests {
     val money
         get() = Dollar(10_000)
+
+    @After
+    fun tearDown() {
+        TestConstants.verifyCandles()
+    }
 
     @Test
     fun `Test NoOpTrader`() {
