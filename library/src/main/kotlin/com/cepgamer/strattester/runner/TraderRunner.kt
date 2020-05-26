@@ -6,7 +6,6 @@ import com.cepgamer.strattester.trader.BaseTrader
 import com.cepgamer.strattester.util.StratLogger
 import kotlinx.coroutines.*
 import java.util.*
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
 abstract class TraderRunner(
@@ -15,7 +14,6 @@ abstract class TraderRunner(
 ) {
     val counter = AtomicLong(0)
     val percentCounter = AtomicLong(0)
-    val provideUpdate = AtomicBoolean(true)
 
     val chunkSize = 100_000
 
@@ -59,13 +57,12 @@ abstract class TraderRunner(
         trader.closePositions(stockList.last().second)
         counter.incrementAndGet()
 
-        if (provideUpdate.getAndSet(false)) {
+        val old = percentCounter.get()
+        percentCounter.set(counter.get() * 100 / total)
+        if (old / 10 != percentCounter.get() / 10) {
             provideUpdate(counter.get(), total)
-        } else {
-            val old = percentCounter.get()
-            percentCounter.set(counter.get() * 100 / total)
-            provideUpdate.set(old / 10 != percentCounter.get() / 10)
         }
+
         return trader
     }
 
