@@ -25,13 +25,12 @@ open class GeneratedStrategiesTradersExecutor(
             haveMetricCutoffs = haveMetricCutoffs,
             haveInverse = haveInverse
         ).generate()
-        val traders = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate().map { it() }
+        val traders = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate()
 
-        traderTestingExecutor = TraderTestingExecutor(symbol, rawData, startDate, endDate, traders)
+        traderTestingExecutor = TraderTestingExecutor(symbol, rawData, traders)
     }
 
-    override fun execute() {
-
-        traderTestingExecutor.execute()
+    override fun execute(resultReportCallback: ResultReportCallback) {
+        traderTestingExecutor.execute(resultReportCallback)
     }
 }

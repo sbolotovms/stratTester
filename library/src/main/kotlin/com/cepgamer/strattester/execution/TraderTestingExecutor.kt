@@ -15,13 +15,14 @@ class TraderTestingExecutor(
     rawData: List<PriceCandle>,
     val startDate: YearMonth,
     val endDate: YearMonth,
-    private val traders: List<BaseTrader>
+    private val traderGenerators: List<() -> BaseTrader>
 ) : BaseExecutor(symbol, rawData) {
 
     fun performRun(
         data: List<Pair<Stock, PriceCandle>>,
         fileSuffix: String
     ) {
+        val traders = traderGenerators.map { it() }
         val runner = SavedDataTraderRunner(
             traders, false, listOf(data)
         )
