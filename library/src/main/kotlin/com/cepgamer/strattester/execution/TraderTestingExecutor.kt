@@ -5,18 +5,15 @@ import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.trader.BaseTrader
 import com.cepgamer.strattester.util.StratLogger
-import java.io.File
 import java.math.BigDecimal
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
 
 class TraderTestingExecutor(
     symbol: String,
     rawData: List<PriceCandle>,
-    val startDate: YearMonth,
-    val endDate: YearMonth,
     private val traderGenerators: List<() -> BaseTrader>
 ) : BaseExecutor(symbol, rawData) {
+
+    lateinit var reportCallback: ResultReportCallback
 
     fun performRun(
         data: List<Pair<Stock, PriceCandle>>,
@@ -47,23 +44,11 @@ class TraderTestingExecutor(
             """
         )
 
-        val res = tradersReport(
-            traders.filter { it.transactions.isNotEmpty() },
-            successfulCriteria = moneyAvailable.max(moneyAvailable * (data.last().second.close / data.first().second.close))
+        reportCallback.onResultTraders(
+            traders,
+            moneyAvailable.max(moneyAvailable * (data.last().second.close / data.first().second.close)),
+            fileSuffix
         )
-
-        val formatter = DateTimeFormatter.ofPattern("yy-MMM")
-        val prefix = "${symbol}/${startDate.format(formatter)}_${endDate.format(formatter)}"
-        val writeFile = { result: String ->
-            { it: File ->
-                it.apply {
-                    parentFile.mkdirs()
-                    createNewFile()
-                    writeText(result)
-                }
-            }
-        }
-        File("$prefix/res_$fileSuffix.txt").let(writeFile(res))
     }
 
     fun runDailyData(
@@ -93,7 +78,9 @@ class TraderTestingExecutor(
         )
     }
 
-    override fun execute() {
+    override fun execute(resultReportCallback: ResultReportCallback) {
+        reportCallback = resultReportCallback
+
         runDailyData(rawData)
         runHourlyData(rawData)
     }

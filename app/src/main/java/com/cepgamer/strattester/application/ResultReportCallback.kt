@@ -8,7 +8,7 @@ import java.io.File
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-class SomeClassRealQuick(
+class ResultReportCallback(
     val symbol: String,
     val startDate: YearMonth,
     val endDate: YearMonth
