@@ -44,6 +44,6 @@ object Main {
 
 
 
-        StrategyTestingScenario(stock, months.first, months.second, haveInverse = false).runStrategyTests()
+        StrategyTestingScenario(stock, months.first, months.second, true, false, false, false).runStrategyTests()
     }
 }
