@@ -1,6 +1,6 @@
 package com.cepgamer.strattester
 
-import com.cepgamer.strattester.executionScenarios.StrategyTestingScenario
+import com.cepgamer.strattester.execution.GeneratedStrategiesExecutor
 import java.time.Month
 import java.time.YearMonth
 
@@ -67,7 +67,7 @@ object Main {
 
 
 
-        StrategyTestingScenario(
+        GeneratedStrategiesExecutor(
             stock,
             months.first,
             months.second,
@@ -75,6 +75,6 @@ object Main {
             haveMetricCutoffs,
             havePLCutoffs,
             haveInverse
-        ).runStrategyTests()
+        ).execute()
     }
 }

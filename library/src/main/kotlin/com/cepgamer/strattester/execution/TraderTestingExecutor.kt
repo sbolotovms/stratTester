@@ -1,11 +1,8 @@
-package com.cepgamer.strattester.executionScenarios
+package com.cepgamer.strattester.execution
 
 import com.cepgamer.strattester.data.DataDownloadManager
-import com.cepgamer.strattester.generator.StrategyListGenerator
-import com.cepgamer.strattester.generator.TraderGenerator
 import com.cepgamer.strattester.parser.YahooJSONParser
 import com.cepgamer.strattester.runner.SavedDataTraderRunner
-import com.cepgamer.strattester.security.Dollar
 import com.cepgamer.strattester.security.PriceCandle
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.trader.BaseTrader
@@ -15,46 +12,17 @@ import java.math.BigDecimal
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-class StrategyTestingScenario(
-    val symbol: String,
-    val startDate: YearMonth,
-    val endDate: YearMonth,
-    val haveCustom: Boolean = true,
-    val haveMetricCutoffs: Boolean = true,
-    val havePLCutoffs: Boolean = true,
-    val haveInverse: Boolean = true
-) {
-    val security = Stock(symbol)
-
-    val moneyAvailable: Dollar get() = Dollar(10000)
-
-    fun tradersReport(
-        traders: List<BaseTrader>,
-        reportAll: Boolean = false,
-        successfulCriteria: BigDecimal = moneyAvailable
-    ): String {
-        val reportTop = 75
-        return """${if (reportAll) traders.toString() else ""}
-----------------------------------------------------------------
-            Total Traders: ${traders.size}
-            Any successful traders: ${traders.find { it.money > successfulCriteria } != null}
-            Top $reportTop Successful traders: ${traders.filter { it.money > successfulCriteria }
-            .sortedBy { it.money }.takeLast(reportTop)}
-----------------------------------------------------------------
-        """
-    }
+class TraderTestingExecutor(
+    symbol: String,
+    startDate: YearMonth,
+    endDate: YearMonth,
+    val traders: List<BaseTrader>
+): BaseExecutor(symbol, startDate, endDate) {
 
     fun performRun(
         data: List<Pair<Stock, PriceCandle>>,
         fileSuffix: String
     ) {
-        val strats = StrategyListGenerator(
-            security,
-            haveCustom = haveCustom,
-            haveMetricCutoffs = haveMetricCutoffs,
-            haveInverse = haveInverse
-        ).generate()
-        val traders = TraderGenerator(strats, havePLCutoffs = havePLCutoffs).generate().map { it() }
         val runner = SavedDataTraderRunner(
             traders, false, listOf(data)
         )
@@ -125,8 +93,7 @@ class StrategyTestingScenario(
         )
     }
 
-    fun runStrategyTests(
-    ) {
+    override fun execute() {
         val downloader = DataDownloadManager(symbol, startDate, endDate)
         val rawData = downloader.yahooJsons.map { YahooJSONParser(it).parse() }.reduce { acc, list -> acc + list }
 
