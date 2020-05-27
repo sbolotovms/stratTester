@@ -35,7 +35,7 @@ open class MetricCutoffStrategy(
          * Generates (N + 1) * (M + 1) strategies from 0 to 1 with 1/N step for good signal and 1/M step for bad signal.
          */
         fun generateNbyMStrategies(
-            metric: BaseMetric,
+            metric: () -> BaseMetric,
             security: Stock,
             n: Int,
             m: Int
@@ -44,7 +44,7 @@ open class MetricCutoffStrategy(
                 (0..m).map { j ->
                     {
                         MetricCutoffStrategy(
-                            metric,
+                            metric(),
                             security,
                             BigDecimal(i) / BigDecimal(n),
                             BigDecimal(j) / BigDecimal(n)

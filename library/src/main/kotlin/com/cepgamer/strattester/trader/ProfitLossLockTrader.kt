@@ -47,7 +47,7 @@ class ProfitLossLockTrader(
          * Generates (N + 1) * (M + 1) strategies from 0 to 1 with 1/N step for good signal and 1/M step for bad signal.
          */
         fun generateNbyMTraders(
-            strategy: BaseStrategy,
+            strategy: () -> BaseStrategy,
             moneyAvailable: Dollar,
             profitLockPercentages: List<Int>,
             lossLockPercentages: List<Int>,
@@ -59,7 +59,7 @@ class ProfitLossLockTrader(
                         sinceLastSaleCurrent.map { since ->
                             {
                                 ProfitLossLockTrader(
-                                    strategy,
+                                    strategy(),
                                     Dollar(moneyAvailable),
                                     BigDecimal(profit).setScale(5),
                                     BigDecimal(loss).setScale(5),

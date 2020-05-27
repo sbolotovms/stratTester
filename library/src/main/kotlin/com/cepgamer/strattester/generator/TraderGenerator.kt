@@ -26,7 +26,7 @@ class TraderGenerator(
     private fun generatePLCutoffTraders(): List<() -> BaseTrader> {
         val list = strats.map {
             ProfitLossLockTrader.generateNbyMTraders(
-                it(),
+                it,
                 moneyAvailable(),
                 listOf(1, 2, 5, 10, 15, 20, 25, 50),
                 listOf(1, 2, 5, 10, 15, 20, 25, 50),

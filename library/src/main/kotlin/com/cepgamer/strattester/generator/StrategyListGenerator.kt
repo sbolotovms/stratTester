@@ -3,7 +3,6 @@ package com.cepgamer.strattester.generator
 import com.cepgamer.strattester.metric.*
 import com.cepgamer.strattester.security.Stock
 import com.cepgamer.strattester.strategy.*
-import java.math.BigDecimal
 
 class StrategyListGenerator(
     val security: Stock,
@@ -15,7 +14,7 @@ class StrategyListGenerator(
     private fun generateMetricStrategies(metric: () -> BaseMetric): List<() -> BaseStrategy> {
         val list =
             MetricCutoffStrategy.generateNbyMStrategies(
-                metric(),
+                metric,
                 security,
                 10,
                 10
