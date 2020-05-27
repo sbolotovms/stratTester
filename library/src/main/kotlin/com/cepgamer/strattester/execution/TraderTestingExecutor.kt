@@ -17,9 +17,11 @@ class TraderTestingExecutor(
     lateinit var reportCallback: ResultReportCallback
 
     fun performRun(
-        data: List<Pair<Stock, PriceCandle>>,
+        passedData: List<Pair<Stock, PriceCandle>>,
         fileSuffix: String
     ) {
+        val data = passedData.sortedBy { it.second.openTimestamp }
+        val dataCopy = data.map { it.first to it.second.deepCopy() }
         val traders = traderGenerators.map { it() }
         val runner = SavedDataTraderRunner(
             traders, false, listOf(data)

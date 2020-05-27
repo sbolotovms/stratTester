@@ -41,7 +41,7 @@ abstract class TraderRunner(
         total: Long
     ): Deferred<BaseTrader> =
         GlobalScope.async {
-            runTrader(trader, stockList, total)
+            runTrader(trader, ArrayList(stockList), total)
         }
 
     private fun runTrader(

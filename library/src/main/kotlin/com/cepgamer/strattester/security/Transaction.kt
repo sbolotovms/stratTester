@@ -6,7 +6,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
 
-data class Transaction(val security: Stock, val quantity: BigDecimal, val action: Action) {
+data class Transaction(val security: Stock, val quantity: BigDecimal, val action: Action, val timestamp: Date) {
     enum class Action {
         BUY,
         SELL
@@ -31,7 +31,12 @@ data class Transaction(val security: Stock, val quantity: BigDecimal, val action
                 val quantity = money.divide(buyPrice, RoundingMode.FLOOR).setScale(0, RoundingMode.FLOOR).setScale(5)
                 trader.money -= buyPrice * quantity
 
-                return Transaction(security, quantity, Action.BUY) to Position(
+                return Transaction(
+                    security,
+                    quantity,
+                    Action.BUY,
+                    Date(priceCandle.openTimestamp + priceCandle.timespan)
+                ) to Position(
                     security,
                     quantity,
                     buyPrice,
@@ -49,7 +54,12 @@ data class Transaction(val security: Stock, val quantity: BigDecimal, val action
                     sellPrice = sellingPrice
                     status = Position.Status.CLOSED
                 }
-                return Transaction(position.security, position.quantity, Action.SELL) to position
+                return Transaction(
+                    position.security,
+                    position.quantity,
+                    Action.SELL,
+                    Date(priceCandle.openTimestamp + priceCandle.timespan)
+                ) to position
             }
         }
     }

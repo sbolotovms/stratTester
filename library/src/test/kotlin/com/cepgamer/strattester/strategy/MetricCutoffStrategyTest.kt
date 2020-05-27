@@ -10,6 +10,7 @@ import com.cepgamer.strattester.trader.StrategyTrader
 import org.junit.Assert
 import org.junit.Test
 import java.math.BigDecimal
+import java.util.*
 
 class MetricCutoffStrategyTest {
     val security = Stock("AAPL")
@@ -25,7 +26,14 @@ class MetricCutoffStrategyTest {
 
         trader.priceUpdate(TestConstants.growthCandle)
         Assert.assertEquals(
-            listOf(Transaction(security, BigDecimal(5_000).setScale(5), Transaction.Action.BUY)),
+            listOf(
+                Transaction(
+                    security,
+                    BigDecimal(5_000).setScale(5),
+                    Transaction.Action.BUY,
+                    Date(TestConstants.growthCandle.openTimestamp + TestConstants.growthCandle.timespan)
+                )
+            ),
             trader.transactions
         )
         Assert.assertEquals(
